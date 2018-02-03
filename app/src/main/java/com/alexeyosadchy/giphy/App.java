@@ -5,6 +5,7 @@ import android.app.Application;
 import com.alexeyosadchy.giphy.di.component.ApplicationComponent;
 import com.alexeyosadchy.giphy.di.component.DaggerApplicationComponent;
 import com.alexeyosadchy.giphy.di.module.ApplicationModule;
+import com.facebook.drawee.backends.pipeline.Fresco;
 
 /**
  * Application class.
@@ -21,6 +22,8 @@ public class App extends Application {
         mApplicationComponent = DaggerApplicationComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .build();
+        Fresco.initialize(this);
+        Fresco.getImagePipeline().clearCaches();
     }
 
     public ApplicationComponent getApplicationComponent() {

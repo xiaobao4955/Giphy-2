@@ -20,11 +20,9 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    public Retrofit provideRestAdapter(@ApplicationContext Context context,
-                                       OkHttpClient okHttpClient) {
+    public Retrofit provideRestAdapter(@ApplicationContext Context context) {
         Retrofit.Builder builder = new Retrofit.Builder();
-        builder.client(okHttpClient)
-                .baseUrl(context.getString(R.string.api_url))
+        builder.baseUrl(context.getString(R.string.api_url))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create());
         return builder.build();

@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">GIPHY</string>
-    <string name="api_url">"http://api.giphy.com/v1"</string>
+    <string name="api_url">"http://api.giphy.com/v1/"</string>
 </resources>
