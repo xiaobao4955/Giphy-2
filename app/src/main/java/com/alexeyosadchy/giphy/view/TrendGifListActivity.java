@@ -25,14 +25,25 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import icepick.Icepick;
+import icepick.State;
+
 public class TrendGifListActivity extends AppCompatActivity implements ITrendGifListActivity {
 
     private ActivityComponent mActivityComponent;
     private RecyclerView mRecyclerView;
-    private LinearLayoutManager mLinearLayoutManager;
     private GifListAdapter mGifListAdapter;
     private ProgressBar mProgressBar;
     private SearchView searchItem;
+
+    @State
+    boolean searchMode = false;
+
+    @State
+    String searchQuery;
+
+    @Inject
+    LinearLayoutManager mLinearLayoutManager;
 
     @Inject
     ITrendGifListPresenter presenter;
@@ -41,8 +52,9 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trend_gif_list);
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_gifs);
+        Icepick.restoreInstanceState(this, savedInstanceState);
+        mProgressBar = findViewById(R.id.progressBar);
+        mRecyclerView = findViewById(R.id.rv_gifs);
         mActivityComponent = DaggerActivityComponent.builder()
                 .applicationComponent(((App) getApplication()).getApplicationComponent())
                 .activityModule(new ActivityModule(this))
@@ -60,7 +72,6 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
 
     @Override
     public void prepareView(List<GifView> gifs) {
-        mLinearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         mGifListAdapter = new GifListAdapter(gifs, mLinearLayoutManager.getWidth());
         mRecyclerView.setAdapter(mGifListAdapter);
@@ -85,6 +96,7 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
             @Override
             public boolean onQueryTextSubmit(String query) {
                 presenter.onSearchSubmit(query);
+                searchQuery = query;
                 return false;
             }
 
@@ -103,11 +115,6 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
     }
 
     @Override
-    public void setTitle(String title) {
-        setTitle(title);
-    }
-
-    @Override
     public void showLoading() {
         mProgressBar.setVisibility(View.VISIBLE);
     }
@@ -123,13 +130,34 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
     }
 
     @Override
-    public CharSequence getSearchQuery() {
-        return searchItem.getQuery();
+    public String getSearchQuery() {
+        return searchQuery;
     }
 
     @Override
-    public boolean isSearchActive() {
-        return !searchItem.isIconified();
+    public boolean isSearchModeActive(){
+        return searchMode;
+    }
+
+    @Override
+    public void onBackPressed() {
+        presenter.onBackPressed();
+    }
+
+    @Override
+    public void closeApplication(){
+        super.onBackPressed();
+    }
+
+    @Override
+    public void switchSearchMode() {
+        if (!searchMode) {
+            searchMode = true;
+            setTitle(R.string.search_mode_on);
+        } else {
+            searchMode = false;
+            setTitle(R.string.search_mode_off);
+        }
     }
 
     @Override
@@ -143,9 +171,9 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
 
     private void showSnackBar(String message, Callback callback) {
         Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content),
-                message, Snackbar.LENGTH_INDEFINITE).setAction("Retry", view -> callback.call());
+                message, Snackbar.LENGTH_INDEFINITE).setAction(R.string.text_btn_snackbar, view -> callback.call());
         View sbView = snackbar.getView();
-        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+        TextView textView = sbView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(ContextCompat.getColor(this, R.color.text_color_inverse));
         snackbar.show();
     }

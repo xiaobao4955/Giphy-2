@@ -9,17 +9,21 @@ public interface ITrendGifListActivity {
 
     void prepareView(List<GifView> gifs);
 
-    void setTitle(String title);
-
     void showLoading();
 
     void hideLoading();
 
     boolean isNetworkConnected();
 
-    CharSequence getSearchQuery();
+    String getSearchQuery();
 
-    boolean isSearchActive();
+    boolean isSearchModeActive();
+
+    void onBackPressed();
+
+    void closeApplication();
+
+    void switchSearchMode();
 
     void showError(String message, TrendGifListActivity.Callback callback);
 

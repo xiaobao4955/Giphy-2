@@ -3,4 +3,7 @@
     <string name="api_url">"https://api.giphy.com/v1/"</string>
     <string name="error_some">Some Error Occurred!</string>
     <string name="error_connection">Internet connection lost!</string>
+    <string name="search_mode_on">Search</string>
+    <string name="search_mode_off">Trending</string>
+    <string name="text_btn_snackbar">Retry</string>
 </resources>

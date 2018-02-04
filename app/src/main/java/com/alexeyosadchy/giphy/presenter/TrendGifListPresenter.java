@@ -39,10 +39,20 @@ public class TrendGifListPresenter implements ITrendGifListPresenter {
             mView.hideLoading();
         };
         Consumer<Throwable> onError = throwable -> errorHandling(throwable, this::loadGifs);
-        if (mView.isSearchActive()) {
-            getFoundGifs(onNext, onError, mView.getSearchQuery().toString());
+        if (mView.isSearchModeActive()) {
+            getFoundGifs(onNext, onError, mView.getSearchQuery());
         } else {
             getTrendingGifs(onNext, onError);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mView.isSearchModeActive()) {
+            mView.switchSearchMode();
+            onCreateView();
+        } else {
+            mView.closeApplication();
         }
     }
 
@@ -50,6 +60,7 @@ public class TrendGifListPresenter implements ITrendGifListPresenter {
     public void onCreateView() {
         mView.showLoading();
         getTrendingGifs(gifViews -> {
+            mGifViews.clear();
             mGifViews.addAll(gifViews);
             mView.prepareView(mGifViews);
             mView.hideLoading();
@@ -59,6 +70,7 @@ public class TrendGifListPresenter implements ITrendGifListPresenter {
     @Override
     public void onSearchSubmit(String query) {
         mView.showLoading();
+        mView.switchSearchMode();
         getFoundGifs(gifViews -> {
             mGifViews.clear();
             mGifViews.addAll(gifViews);

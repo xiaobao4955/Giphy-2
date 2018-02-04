@@ -7,6 +7,8 @@ public interface ITrendGifListPresenter {
     void onAttach(ITrendGifListActivity view);
     void onDetach();
 
+    void onBackPressed();
+
     void onCreateView();
 
     void loadGifs();
