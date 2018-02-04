@@ -5,6 +5,7 @@ import android.content.Context;
 import com.alexeyosadchy.giphy.di.ApplicationContext;
 import com.alexeyosadchy.giphy.di.module.ApiModule;
 import com.alexeyosadchy.giphy.di.module.ApplicationModule;
+import com.alexeyosadchy.giphy.model.api.ApiManager;
 import com.alexeyosadchy.giphy.model.api.ApiService;
 
 import javax.inject.Singleton;
@@ -19,4 +20,6 @@ public interface ApplicationComponent {
     Context getContext();
 
     ApiService getApiService();
+
+    ApiManager getApiManager();
 }

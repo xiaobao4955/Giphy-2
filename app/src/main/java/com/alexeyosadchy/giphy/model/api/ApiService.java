@@ -14,5 +14,8 @@ public interface ApiService {
                                                @Query("offset") int offset);
 
     @GET("/v1/gifs/search")
-    Observable<Response> search(@Query("api_key")String apiKey, @Query("q")String phrase);
+    Observable<Response> search(@Query("api_key") String apiKey,
+                                @Query("q") String phrase,
+                                @Query("limit") int limit,
+                                @Query("offset") int offset);
 }

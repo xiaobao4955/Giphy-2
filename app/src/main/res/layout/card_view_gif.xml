@@ -4,7 +4,8 @@
                                     android:id="@+id/card_view_gif"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    fresco:cardBackgroundColor="@android:color/black">
+                                    fresco:cardBackgroundColor="@android:color/black"
+                                    fresco:cardCornerRadius="0dp">
 
 
     <com.facebook.drawee.view.SimpleDraweeView
@@ -12,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="8dp"
-        fresco:actualImageScaleType="fitCenter"
+        fresco:actualImageScaleType="centerCrop"
         fresco:layout_constraintBottom_toBottomOf="parent"
         fresco:placeholderImage="@drawable/ic_launcher_background"/>
 </android.support.v7.widget.CardView>

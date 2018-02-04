@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.alexeyosadchy.giphy.App;
 import com.alexeyosadchy.giphy.di.ApplicationContext;
+import com.alexeyosadchy.giphy.model.api.ApiManager;
+import com.alexeyosadchy.giphy.model.api.ApiProcessingManager;
 
 import javax.inject.Singleton;
 
@@ -24,5 +26,11 @@ public class ApplicationModule {
     @ApplicationContext
     Context provideAppContext() {
         return mContext;
+    }
+
+    @Singleton
+    @Provides
+    ApiManager provideApiManager(ApiProcessingManager apiProcessingManager) {
+        return apiProcessingManager;
     }
 }

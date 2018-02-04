@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.alexeyosadchy.giphy.R;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.drawable.ProgressBarDrawable;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -17,9 +18,11 @@ import java.util.Random;
 public class GifListAdapter extends RecyclerView.Adapter<GifListAdapter.GifHolder> {
 
     private List<GifView> mGifs;
+    private int mLayoutWidth;
 
-    public GifListAdapter(List<GifView> gifs) {
+    public GifListAdapter(List<GifView> gifs, int layoutWidth) {
         mGifs = gifs;
+        mLayoutWidth = layoutWidth;
     }
 
     @Override
@@ -35,9 +38,8 @@ public class GifListAdapter extends RecyclerView.Adapter<GifListAdapter.GifHolde
                 .setAutoPlayAnimations(true)
                 .build();
         holder.mSimpleDraweeView.setController(controller);
-        float ratio = (float) mGifs.get(position).getWidth() / mGifs.get(position).getHeight();
-        holder.mSimpleDraweeView.setAspectRatio(ratio);
-        float scaleFactor = (float) 1080f / mGifs.get(position).getWidth();
+        holder.mSimpleDraweeView.getHierarchy().setProgressBarImage(new ProgressBarDrawable());
+        float scaleFactor = (float) mLayoutWidth / mGifs.get(position).getWidth();
         holder.mCardView.getLayoutParams().height = (int) ((float) mGifs.get(position).getHeight() * scaleFactor);
         holder.mSimpleDraweeView.getHierarchy().setPlaceholderImage(getPlaceHolderColor());
     }
