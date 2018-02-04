@@ -1,6 +1,7 @@
 package com.alexeyosadchy.giphy.view;
 
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,11 +19,11 @@ import java.util.Random;
 public class GifListAdapter extends RecyclerView.Adapter<GifListAdapter.GifHolder> {
 
     private List<GifView> mGifs;
-    private int mLayoutWidth;
+    private LinearLayoutManager mLinearLayoutManager;
 
-    public GifListAdapter(List<GifView> gifs, int layoutWidth) {
+    public GifListAdapter(List<GifView> gifs, LinearLayoutManager linearLayoutManager) {
         mGifs = gifs;
-        mLayoutWidth = layoutWidth;
+        mLinearLayoutManager = linearLayoutManager;
     }
 
     @Override
@@ -39,7 +40,7 @@ public class GifListAdapter extends RecyclerView.Adapter<GifListAdapter.GifHolde
                 .build();
         holder.mSimpleDraweeView.setController(controller);
         holder.mSimpleDraweeView.getHierarchy().setProgressBarImage(new ProgressBarDrawable());
-        float scaleFactor = (float) mLayoutWidth / mGifs.get(position).getWidth();
+        float scaleFactor = (float) mLinearLayoutManager.getWidth() / mGifs.get(position).getWidth();
         holder.mCardView.getLayoutParams().height = (int) ((float) mGifs.get(position).getHeight() * scaleFactor);
         holder.mSimpleDraweeView.getHierarchy().setPlaceholderImage(getPlaceHolderColor());
     }
@@ -56,8 +57,8 @@ public class GifListAdapter extends RecyclerView.Adapter<GifListAdapter.GifHolde
 
         public GifHolder(View itemView) {
             super(itemView);
-            mCardView = (CardView) itemView.findViewById(R.id.card_view_gif);
-            mSimpleDraweeView = (SimpleDraweeView) itemView.findViewById(R.id.my_image_view);
+            mCardView = itemView.findViewById(R.id.card_view_gif);
+            mSimpleDraweeView = itemView.findViewById(R.id.my_image_view);
         }
     }
 

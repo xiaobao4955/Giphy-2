@@ -3,7 +3,7 @@
                                     xmlns:fresco="http://schemas.android.com/apk/res-auto"
                                     android:id="@+id/card_view_gif"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="200dp"
                                     fresco:cardBackgroundColor="@android:color/black"
                                     fresco:cardCornerRadius="0dp">
 

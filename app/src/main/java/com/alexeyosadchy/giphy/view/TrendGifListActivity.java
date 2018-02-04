@@ -31,7 +31,6 @@ import icepick.State;
 public class TrendGifListActivity extends AppCompatActivity implements ITrendGifListActivity {
 
     private ActivityComponent mActivityComponent;
-    private RecyclerView mRecyclerView;
     private GifListAdapter mGifListAdapter;
     private ProgressBar mProgressBar;
     private SearchView searchItem;
@@ -43,9 +42,6 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
     String searchQuery;
 
     @Inject
-    LinearLayoutManager mLinearLayoutManager;
-
-    @Inject
     ITrendGifListPresenter presenter;
 
     @Override
@@ -54,7 +50,6 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
         setContentView(R.layout.activity_trend_gif_list);
         Icepick.restoreInstanceState(this, savedInstanceState);
         mProgressBar = findViewById(R.id.progressBar);
-        mRecyclerView = findViewById(R.id.rv_gifs);
         mActivityComponent = DaggerActivityComponent.builder()
                 .applicationComponent(((App) getApplication()).getApplicationComponent())
                 .activityModule(new ActivityModule(this))
@@ -66,18 +61,20 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
     }
 
     @Override
-    public void updateList() {
+    public void updateList(int position) {
         mGifListAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void prepareView(List<GifView> gifs) {
-        mRecyclerView.setLayoutManager(mLinearLayoutManager);
-        mGifListAdapter = new GifListAdapter(gifs, mLinearLayoutManager.getWidth());
-        mRecyclerView.setAdapter(mGifListAdapter);
-        mRecyclerView.addOnScrollListener(new EndlessScrollListener(mLinearLayoutManager) {
+        RecyclerView recyclerView = findViewById(R.id.rv_gifs);
+        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(this);
+        mGifListAdapter = new GifListAdapter(gifs, mLinearLayoutManager);
+        recyclerView.setAdapter(mGifListAdapter);
+        recyclerView.setLayoutManager(mLinearLayoutManager);
+        recyclerView.addOnScrollListener(new EndlessScrollListener(mLinearLayoutManager) {
             @Override
-            public void onLoadMore(int current_page) {
+            public void onLoadMore() {
                 presenter.loadGifs();
             }
         });
@@ -95,8 +92,8 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
         searchItem.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                presenter.onSearchSubmit(query);
                 searchQuery = query;
+                presenter.onSearchSubmit(query);
                 return false;
             }
 
@@ -135,7 +132,7 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
     }
 
     @Override
-    public boolean isSearchModeActive(){
+    public boolean isSearchModeActive() {
         return searchMode;
     }
 
@@ -145,7 +142,7 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
     }
 
     @Override
-    public void closeApplication(){
+    public void closeApplication() {
         super.onBackPressed();
     }
 

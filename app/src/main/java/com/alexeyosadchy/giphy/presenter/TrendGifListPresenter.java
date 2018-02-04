@@ -18,7 +18,7 @@ import io.reactivex.schedulers.Schedulers;
 
 public class TrendGifListPresenter implements ITrendGifListPresenter {
 
-    private static final int LIMIT_RECORDS = 25;
+    private static final int LIMIT_RECORDS = 12;
 
     private ITrendGifListActivity mView;
     private ApiManager mApiManager;
@@ -32,10 +32,21 @@ public class TrendGifListPresenter implements ITrendGifListPresenter {
 
     @Override
     public void loadGifs() {
+        load();
+    }
+
+    @Override
+    public void onCreateView() {
+        mGifViews.clear();
+        mView.prepareView(mGifViews);
+        load();
+    }
+
+    private void load() {
         mView.showLoading();
         Consumer<List<GifView>> onNext = gifViews -> {
             mGifViews.addAll(gifViews);
-            mView.updateList();
+            mView.updateList(0);
             mView.hideLoading();
         };
         Consumer<Throwable> onError = throwable -> errorHandling(throwable, this::loadGifs);
@@ -47,37 +58,9 @@ public class TrendGifListPresenter implements ITrendGifListPresenter {
     }
 
     @Override
-    public void onBackPressed() {
-        if (mView.isSearchModeActive()) {
-            mView.switchSearchMode();
-            onCreateView();
-        } else {
-            mView.closeApplication();
-        }
-    }
-
-    @Override
-    public void onCreateView() {
-        mView.showLoading();
-        getTrendingGifs(gifViews -> {
-            mGifViews.clear();
-            mGifViews.addAll(gifViews);
-            mView.prepareView(mGifViews);
-            mView.hideLoading();
-        }, throwable -> errorHandling(throwable, this::onCreateView));
-    }
-
-    @Override
     public void onSearchSubmit(String query) {
-        mView.showLoading();
         mView.switchSearchMode();
-        getFoundGifs(gifViews -> {
-            mGifViews.clear();
-            mGifViews.addAll(gifViews);
-            mView.updateList();
-            mView.hideLoading();
-        }, throwable -> {
-        }, query);
+        onCreateView();
     }
 
     private void getFoundGifs(Consumer<? super List<GifView>> onNext, Consumer<? super Throwable> onError, String query) {
@@ -113,6 +96,16 @@ public class TrendGifListPresenter implements ITrendGifListPresenter {
             t.printStackTrace();
         } else {
             mView.showError(t.getLocalizedMessage(), callback);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mView.isSearchModeActive()) {
+            mView.switchSearchMode();
+            onCreateView();
+        } else {
+            mView.closeApplication();
         }
     }
 }

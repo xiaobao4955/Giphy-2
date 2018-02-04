@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface ITrendGifListActivity {
 
-    void updateList();
+    void updateList(int position);
 
     void prepareView(List<GifView> gifs);
 

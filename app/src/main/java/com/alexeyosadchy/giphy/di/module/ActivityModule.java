@@ -32,11 +32,6 @@ public class ActivityModule {
     }
 
     @Provides
-    LinearLayoutManager provideLinearLayoutManager(@ActivityContext Context context){
-        return new LinearLayoutManager(context);
-    }
-
-    @Provides
     ITrendGifListPresenter provideITrendGifListPresenter(TrendGifListPresenter presenter) {
         return presenter;
     }
