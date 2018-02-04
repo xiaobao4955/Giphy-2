@@ -1,5 +1,6 @@
 package com.alexeyosadchy.giphy.view;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -25,9 +26,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import icepick.Icepick;
-import icepick.State;
-
 public class TrendGifListActivity extends AppCompatActivity implements ITrendGifListActivity {
 
     private ActivityComponent mActivityComponent;
@@ -35,11 +33,8 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
     private ProgressBar mProgressBar;
     private SearchView searchItem;
 
-    @State
-    boolean searchMode = false;
-
-    @State
-    String searchQuery;
+    private boolean searchMode = false;
+    private String searchQuery;
 
     @Inject
     ITrendGifListPresenter presenter;
@@ -48,7 +43,6 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trend_gif_list);
-        Icepick.restoreInstanceState(this, savedInstanceState);
         mProgressBar = findViewById(R.id.progressBar);
         mActivityComponent = DaggerActivityComponent.builder()
                 .applicationComponent(((App) getApplication()).getApplicationComponent())
@@ -58,6 +52,7 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
 
         presenter.onAttach(this);
         presenter.onCreateView();
+        setTitle(R.string.search_mode_off);
     }
 
     @Override
@@ -173,5 +168,11 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
         TextView textView = sbView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(ContextCompat.getColor(this, R.color.text_color_inverse));
         snackbar.show();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
     }
 }

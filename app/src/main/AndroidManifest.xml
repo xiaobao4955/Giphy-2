@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".view.TrendGifListActivity"
-            android:label="@string/search_mode_off">
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

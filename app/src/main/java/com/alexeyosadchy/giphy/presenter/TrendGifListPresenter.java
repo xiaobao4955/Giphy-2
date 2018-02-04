@@ -59,7 +59,9 @@ public class TrendGifListPresenter implements ITrendGifListPresenter {
 
     @Override
     public void onSearchSubmit(String query) {
-        mView.switchSearchMode();
+        if (!mView.isSearchModeActive()) {
+            mView.switchSearchMode();
+        }
         onCreateView();
     }
 
