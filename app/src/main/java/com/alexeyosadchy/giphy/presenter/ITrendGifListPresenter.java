@@ -11,6 +11,8 @@ public interface ITrendGifListPresenter {
 
     void onCreateView();
 
+    void onLongClickItem(int position);
+
     void loadGifs();
 
     void onSearchSubmit(String query);

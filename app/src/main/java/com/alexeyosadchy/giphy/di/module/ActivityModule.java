@@ -10,6 +10,7 @@ import com.alexeyosadchy.giphy.presenter.TrendGifListPresenter;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.disposables.CompositeDisposable;
 
 @Module
 public class ActivityModule {
@@ -24,6 +25,11 @@ public class ActivityModule {
     @ActivityContext
     Context provideContext() {
         return mActivity;
+    }
+
+    @Provides
+    CompositeDisposable provideCompositeDisposable(){
+        return new CompositeDisposable();
     }
 
     @Provides

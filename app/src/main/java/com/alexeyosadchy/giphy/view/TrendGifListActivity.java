@@ -1,6 +1,8 @@
 package com.alexeyosadchy.giphy.view;
 
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -8,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,6 +35,7 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
     private GifListAdapter mGifListAdapter;
     private ProgressBar mProgressBar;
     private SearchView searchItem;
+    private RecyclerView mRecyclerView;
 
     private boolean searchMode = false;
     private String searchQuery;
@@ -44,6 +48,7 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trend_gif_list);
         mProgressBar = findViewById(R.id.progressBar);
+        mRecyclerView = findViewById(R.id.rv_gifs);
         mActivityComponent = DaggerActivityComponent.builder()
                 .applicationComponent(((App) getApplication()).getApplicationComponent())
                 .activityModule(new ActivityModule(this))
@@ -56,18 +61,17 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
     }
 
     @Override
-    public void updateList(int position) {
+    public void updateList() {
         mGifListAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void prepareView(List<GifView> gifs) {
-        RecyclerView recyclerView = findViewById(R.id.rv_gifs);
         LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(this);
-        mGifListAdapter = new GifListAdapter(gifs, mLinearLayoutManager);
-        recyclerView.setAdapter(mGifListAdapter);
-        recyclerView.setLayoutManager(mLinearLayoutManager);
-        recyclerView.addOnScrollListener(new EndlessScrollListener(mLinearLayoutManager) {
+        mGifListAdapter = new GifListAdapter(gifs, mLinearLayoutManager, presenter);
+        mRecyclerView.setAdapter(mGifListAdapter);
+        mRecyclerView.setLayoutManager(mLinearLayoutManager);
+        mRecyclerView.addOnScrollListener(new EndlessScrollListener(mLinearLayoutManager) {
             @Override
             public void onLoadMore() {
                 presenter.loadGifs();
@@ -173,6 +177,22 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            StaggeredGridLayoutManager sglm = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+            mRecyclerView.setLayoutManager(sglm);
+            mGifListAdapter.setLayoutManager(sglm);
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
 
+        }
+    }
+
+    @Override
+    public void sendGif(String uri) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        //sendIntent.putExtra(Intent.EXTRA_TEXT);
+        sendIntent.setType("image/gif");
+        sendIntent.setData(Uri.parse(uri));
+        startActivity(sendIntent);
     }
 }

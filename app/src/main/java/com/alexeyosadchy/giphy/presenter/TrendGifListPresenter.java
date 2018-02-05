@@ -13,6 +13,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
@@ -23,11 +24,18 @@ public class TrendGifListPresenter implements ITrendGifListPresenter {
     private ITrendGifListActivity mView;
     private ApiManager mApiManager;
     private List<GifView> mGifViews;
+    private CompositeDisposable mDisposable;
 
     @Inject
-    public TrendGifListPresenter(ApiManager apiManager) {
+    public TrendGifListPresenter(ApiManager apiManager, CompositeDisposable disposable) {
         mApiManager = apiManager;
+        mDisposable = disposable;
         mGifViews = new ArrayList<>();
+    }
+
+    @Override
+    public void onLongClickItem(int position) {
+        mView.sendGif(mGifViews.get(position).getUri());
     }
 
     @Override
@@ -46,7 +54,7 @@ public class TrendGifListPresenter implements ITrendGifListPresenter {
         mView.showLoading();
         Consumer<List<GifView>> onNext = gifViews -> {
             mGifViews.addAll(gifViews);
-            mView.updateList(0);
+            mView.updateList();
             mView.hideLoading();
         };
         Consumer<Throwable> onError = throwable -> errorHandling(throwable, this::loadGifs);
@@ -66,19 +74,19 @@ public class TrendGifListPresenter implements ITrendGifListPresenter {
     }
 
     private void getFoundGifs(Consumer<? super List<GifView>> onNext, Consumer<? super Throwable> onError, String query) {
-        mApiManager.search(query, LIMIT_RECORDS, mGifViews.size())
+        mDisposable.add(mApiManager.search(query, LIMIT_RECORDS, mGifViews.size())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(Mapper::transform)
-                .subscribe(onNext, onError);
+                .subscribe(onNext, onError));
     }
 
     private void getTrendingGifs(Consumer<? super List<GifView>> onNext, Consumer<? super Throwable> onError) {
-        mApiManager.getTrendingGifs(LIMIT_RECORDS, mGifViews.size())
+        mDisposable.add(mApiManager.getTrendingGifs(LIMIT_RECORDS, mGifViews.size())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .map(Mapper::transform)
-                .subscribe(onNext, onError);
+                .subscribe(onNext, onError));
     }
 
     @Override
@@ -89,6 +97,7 @@ public class TrendGifListPresenter implements ITrendGifListPresenter {
     @Override
     public void onDetach() {
         mView = null;
+        mDisposable.dispose();
     }
 
     private void errorHandling(Throwable t, TrendGifListActivity.Callback callback) {

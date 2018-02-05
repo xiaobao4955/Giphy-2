@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface ITrendGifListActivity {
 
-    void updateList(int position);
+    void updateList();
 
     void prepareView(List<GifView> gifs);
 
@@ -26,6 +26,8 @@ public interface ITrendGifListActivity {
     void switchSearchMode();
 
     void showError(String message, TrendGifListActivity.Callback callback);
+
+    void sendGif(String uri);
 
     interface Callback {
         void call();
