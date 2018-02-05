@@ -11,6 +11,8 @@ public interface ITrendGifListPresenter {
 
     void onCreateView();
 
+    void onConfigurationChanged(int firstVisiblePosition);
+
     void onLongClickItem(int position);
 
     void loadGifs();

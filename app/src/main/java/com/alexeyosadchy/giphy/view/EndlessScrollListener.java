@@ -1,7 +1,8 @@
 package com.alexeyosadchy.giphy.view;
 
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+
+import com.alexeyosadchy.giphy.utils.AdapterUtils;
 
 public abstract class EndlessScrollListener extends RecyclerView.OnScrollListener {
     public static String TAG = EndlessScrollListener.class.getSimpleName();
@@ -11,10 +12,10 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
     private int visibleThreshold = 3; // The minimum amount of items to have below your current scroll position before loading more.
     int firstVisibleItem, visibleItemCount, totalItemCount;
 
-    private LinearLayoutManager mLinearLayoutManager;
+    private RecyclerView.LayoutManager mLayoutManager;
 
-    public EndlessScrollListener(LinearLayoutManager linearLayoutManager) {
-        this.mLinearLayoutManager = linearLayoutManager;
+    public EndlessScrollListener(RecyclerView.LayoutManager layoutManager) {
+        this.mLayoutManager = layoutManager;
     }
 
     @Override
@@ -24,7 +25,7 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
         if (dx != 0 || dy != 0) {
             visibleItemCount = recyclerView.getChildCount();
             totalItemCount = recyclerView.getAdapter().getItemCount();
-            firstVisibleItem = mLinearLayoutManager.findFirstVisibleItemPosition();
+            firstVisibleItem = AdapterUtils.getCurrentRecyclerViewPosition(recyclerView);
 
             if (loading) {
                 if (totalItemCount > previousTotal) {

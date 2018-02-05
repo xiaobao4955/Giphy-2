@@ -23,6 +23,7 @@ import com.alexeyosadchy.giphy.di.component.ActivityComponent;
 import com.alexeyosadchy.giphy.di.component.DaggerActivityComponent;
 import com.alexeyosadchy.giphy.di.module.ActivityModule;
 import com.alexeyosadchy.giphy.presenter.ITrendGifListPresenter;
+import com.alexeyosadchy.giphy.utils.AdapterUtils;
 import com.alexeyosadchy.giphy.utils.NetworkUtils;
 
 import java.util.List;
@@ -66,12 +67,19 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
     }
 
     @Override
-    public void prepareView(List<GifView> gifs) {
-        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(this);
-        mGifListAdapter = new GifListAdapter(gifs, mLinearLayoutManager, presenter);
+    public void prepareView(List<GifView> gifs, int position) {
+        RecyclerView.LayoutManager layoutManager = null;
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            layoutManager = new LinearLayoutManager(this);
+        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        }
+        mGifListAdapter = new GifListAdapter(gifs, layoutManager, presenter);
         mRecyclerView.setAdapter(mGifListAdapter);
-        mRecyclerView.setLayoutManager(mLinearLayoutManager);
-        mRecyclerView.addOnScrollListener(new EndlessScrollListener(mLinearLayoutManager) {
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.clearOnScrollListeners();
+        mRecyclerView.scrollToPosition(position);
+        mRecyclerView.addOnScrollListener(new EndlessScrollListener(layoutManager) {
             @Override
             public void onLoadMore() {
                 presenter.loadGifs();
@@ -177,22 +185,16 @@ public class TrendGifListActivity extends AppCompatActivity implements ITrendGif
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            StaggeredGridLayoutManager sglm = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-            mRecyclerView.setLayoutManager(sglm);
-            mGifListAdapter.setLayoutManager(sglm);
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-
-        }
+        presenter.onConfigurationChanged(AdapterUtils.getCurrentRecyclerViewPosition(mRecyclerView));
     }
 
     @Override
     public void sendGif(String uri) {
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        //sendIntent.putExtra(Intent.EXTRA_TEXT);
-        sendIntent.setType("image/gif");
-        sendIntent.setData(Uri.parse(uri));
-        startActivity(sendIntent);
+//        Intent sendIntent = new Intent();
+//        sendIntent.setAction(Intent.ACTION_SEND);
+//        //sendIntent.putExtra(Intent.EXTRA_TEXT);
+//        sendIntent.setType("image/gif");
+//        sendIntent.setData(Uri.parse(uri));
+//        startActivity(sendIntent);
     }
 }

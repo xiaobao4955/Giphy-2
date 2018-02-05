@@ -10,13 +10,13 @@ import android.view.ViewGroup;
 
 import com.alexeyosadchy.giphy.R;
 import com.alexeyosadchy.giphy.presenter.ITrendGifListPresenter;
+import com.alexeyosadchy.giphy.utils.AdapterUtils;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.drawable.ProgressBarDrawable;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.List;
-import java.util.Random;
 
 public class GifListAdapter extends RecyclerView.Adapter<GifListAdapter.GifHolder> {
 
@@ -54,10 +54,10 @@ public class GifListAdapter extends RecyclerView.Adapter<GifListAdapter.GifHolde
         } else if (mLayoutManager instanceof StaggeredGridLayoutManager) {
             scaleFactor = (float) mLayoutManager.getWidth() /
                     ((StaggeredGridLayoutManager) mLayoutManager).getSpanCount() /
-                    mGifs.get(position).getWidth();
+                    mGifs.get(position).getHeight();
         }
         holder.mCardView.getLayoutParams().height = (int) ((float) mGifs.get(position).getHeight() * scaleFactor);
-        holder.mSimpleDraweeView.getHierarchy().setPlaceholderImage(getPlaceHolderColor());
+        holder.mSimpleDraweeView.getHierarchy().setPlaceholderImage(AdapterUtils.getRandomColor());
     }
 
     @Override
@@ -81,35 +81,6 @@ public class GifListAdapter extends RecyclerView.Adapter<GifListAdapter.GifHolde
         public boolean onLongClick(View view) {
             mPresenter.onLongClickItem(getAdapterPosition());
             return false;
-        }
-    }
-
-    private int getPlaceHolderColor() {
-        switch (new Random().nextInt(11)) {
-            case 0:
-                return R.color.place_holder_1;
-            case 1:
-                return R.color.place_holder_2;
-            case 2:
-                return R.color.place_holder_3;
-            case 3:
-                return R.color.place_holder_4;
-            case 4:
-                return R.color.place_holder_5;
-            case 5:
-                return R.color.place_holder_6;
-            case 6:
-                return R.color.place_holder_7;
-            case 7:
-                return R.color.place_holder_8;
-            case 8:
-                return R.color.place_holder_9;
-            case 9:
-                return R.color.place_holder_10;
-            case 10:
-                return R.color.place_holder_11;
-            default:
-                return R.color.place_holder_1;
         }
     }
 }

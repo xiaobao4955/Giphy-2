@@ -34,6 +34,11 @@ public class TrendGifListPresenter implements ITrendGifListPresenter {
     }
 
     @Override
+    public void onConfigurationChanged(int firstVisiblePosition) {
+        mView.prepareView(mGifViews, firstVisiblePosition);
+    }
+
+    @Override
     public void onLongClickItem(int position) {
         mView.sendGif(mGifViews.get(position).getUri());
     }
@@ -46,7 +51,7 @@ public class TrendGifListPresenter implements ITrendGifListPresenter {
     @Override
     public void onCreateView() {
         mGifViews.clear();
-        mView.prepareView(mGifViews);
+        mView.prepareView(mGifViews, 0);
         load();
     }
 

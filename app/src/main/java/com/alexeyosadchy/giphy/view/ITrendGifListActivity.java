@@ -7,7 +7,7 @@ public interface ITrendGifListActivity {
 
     void updateList();
 
-    void prepareView(List<GifView> gifs);
+    void prepareView(List<GifView> gifs, int position);
 
     void showLoading();
 
