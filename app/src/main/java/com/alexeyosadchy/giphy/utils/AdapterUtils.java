@@ -8,7 +8,7 @@ import com.alexeyosadchy.giphy.R;
 
 import java.util.Random;
 
-public class AdapterUtils {
+public final class AdapterUtils {
 
     public static int getRandomColor() {
         switch (new Random().nextInt(11)) {

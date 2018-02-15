@@ -1,9 +1,11 @@
 package com.alexeyosadchy.giphy.presenter;
 
 import com.alexeyosadchy.giphy.model.api.ApiManager;
+import com.alexeyosadchy.giphy.model.sharedpreferences.SharedPreferencesHelper;
+import com.alexeyosadchy.giphy.model.storage.GifRetainHelper;
 import com.alexeyosadchy.giphy.view.GifView;
-import com.alexeyosadchy.giphy.view.ITrendGifListActivity;
-import com.alexeyosadchy.giphy.view.TrendGifListActivity;
+import com.alexeyosadchy.giphy.view.screens.trends.ITrendGifListActivity;
+import com.alexeyosadchy.giphy.view.screens.trends.TrendGifListActivity;
 
 import java.net.ConnectException;
 import java.net.UnknownHostException;
@@ -14,33 +16,36 @@ import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
-public class TrendGifListPresenter implements ITrendGifListPresenter {
+public final class TrendGifListPresenter implements ITrendGifListPresenter {
 
-    private static final int LIMIT_RECORDS = 12;
+    private static final int LIMIT_RECORDS = 10;
 
     private ITrendGifListActivity mView;
-    private ApiManager mApiManager;
-    private List<GifView> mGifViews;
-    private CompositeDisposable mDisposable;
+    private final ApiManager mApiManager;
+    private final List<GifView> mGifViews;
+    private final CompositeDisposable mDisposable;
+    private final GifRetainHelper mGifRetainHelper;
+    private final SharedPreferencesHelper preferences;
 
     @Inject
-    public TrendGifListPresenter(ApiManager apiManager, CompositeDisposable disposable) {
+    TrendGifListPresenter(ApiManager apiManager,
+                          CompositeDisposable disposable,
+                          GifRetainHelper gifRetainHelper,
+                          SharedPreferencesHelper sharedPreferencesHelper) {
         mApiManager = apiManager;
         mDisposable = disposable;
+        mGifRetainHelper = gifRetainHelper;
+        preferences = sharedPreferencesHelper;
         mGifViews = new ArrayList<>();
     }
 
     @Override
     public void onConfigurationChanged(int firstVisiblePosition) {
         mView.prepareView(mGifViews, firstVisiblePosition);
-    }
-
-    @Override
-    public void onLongClickItem(int position) {
-        mView.sendGif(mGifViews.get(position).getUri());
     }
 
     @Override
@@ -71,11 +76,54 @@ public class TrendGifListPresenter implements ITrendGifListPresenter {
     }
 
     @Override
+    public void onClickFavoriteButton(int position) {
+        if (preferences.hasContainKey(mGifViews.get(position).getUri())) {
+
+            deleteGifFromStorage(() -> {
+                        preferences.delete(mGifViews.get(position).getUri());
+                        mView.updateList(position);
+                    },
+                    preferences.getFilePath(mGifViews.get(position).getUri()));
+        } else {
+            saveGifToLocalStorage(path -> {
+                        mGifViews.get(position).setLocalePath(path);
+                        preferences.put(mGifViews.get(position));
+                        mView.updateList(position);
+                    },
+                    mGifViews.get(position).getUri());
+        }
+    }
+
+    @Override
+    public boolean onBindView(int position) {
+        return preferences.hasContainKey(mGifViews.get(position).getUri());
+    }
+
+    @Override
     public void onSearchSubmit(String query) {
         if (!mView.isSearchModeActive()) {
             mView.switchSearchMode();
         }
         onCreateView();
+    }
+
+    @Override
+    public void onClickMenuItemFavorite() {
+        mView.navigateToFavoriteGifsActivity();
+    }
+
+    private void deleteGifFromStorage(Action onComplete, String path) {
+        mDisposable.add(mGifRetainHelper.deleteGif(path)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(onComplete, throwable -> mView.showMessage(throwable.getLocalizedMessage())));
+    }
+
+    private void saveGifToLocalStorage(Consumer<? super String> onNext, String uri) {
+        mDisposable.add(mGifRetainHelper.saveGif(uri)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(onNext, throwable -> mView.showMessage(throwable.getLocalizedMessage())));
     }
 
     private void getFoundGifs(Consumer<? super List<GifView>> onNext, Consumer<? super Throwable> onError, String query) {

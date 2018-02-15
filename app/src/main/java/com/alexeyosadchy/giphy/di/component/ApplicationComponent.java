@@ -7,6 +7,7 @@ import com.alexeyosadchy.giphy.di.module.ApiModule;
 import com.alexeyosadchy.giphy.di.module.ApplicationModule;
 import com.alexeyosadchy.giphy.model.api.ApiManager;
 import com.alexeyosadchy.giphy.model.api.ApiService;
+import com.alexeyosadchy.giphy.model.sharedpreferences.SharedPreferencesHelper;
 
 import javax.inject.Singleton;
 
@@ -22,4 +23,6 @@ public interface ApplicationComponent {
     ApiService getApiService();
 
     ApiManager getApiManager();
+
+    SharedPreferencesHelper getSharedPreferencesHelper();
 }

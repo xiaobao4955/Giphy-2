@@ -7,11 +7,7 @@ import com.alexeyosadchy.giphy.di.component.DaggerApplicationComponent;
 import com.alexeyosadchy.giphy.di.module.ApplicationModule;
 import com.facebook.drawee.backends.pipeline.Fresco;
 
-/**
- * Application class.
- */
-
-public class App extends Application {
+public final class App extends Application {
 
     private ApplicationComponent mApplicationComponent;
 
@@ -28,9 +24,5 @@ public class App extends Application {
 
     public ApplicationComponent getApplicationComponent() {
         return mApplicationComponent;
-    }
-
-    public void setApplicationComponent(ApplicationComponent applicationComponent) {
-        mApplicationComponent = applicationComponent;
     }
 }

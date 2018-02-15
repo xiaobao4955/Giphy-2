@@ -7,7 +7,7 @@ import com.alexeyosadchy.giphy.model.api.response.Response;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ResponseDataMapper {
+public final class ResponseDataMapper {
 
     public static List<Images> transform(Response response) {
         List<Images> images = new ArrayList<>();

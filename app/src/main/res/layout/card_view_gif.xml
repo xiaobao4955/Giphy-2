@@ -16,4 +16,13 @@
         fresco:actualImageScaleType="centerCrop"
         fresco:layout_constraintBottom_toBottomOf="parent"
         fresco:placeholderImage="@drawable/ic_launcher_background"/>
+
+    <ImageButton
+        android:id="@+id/button_favorite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        fresco:srcCompat="@drawable/ic_favorite" />
 </android.support.v7.widget.CardView>

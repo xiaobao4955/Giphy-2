@@ -7,9 +7,9 @@ import com.alexeyosadchy.giphy.view.GifView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Mapper {
+final class Mapper {
 
-    public static List<GifView> transform(List<Images> imageList) {
+    static List<GifView> transform(List<Images> imageList) {
         List<GifView> gifs = new ArrayList<>();
         for (Images image : imageList) {
             FixedHeight fixedHeight = image.getFixedHeight();

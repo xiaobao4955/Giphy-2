@@ -5,6 +5,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 
 import com.alexeyosadchy.giphy.di.ActivityContext;
+import com.alexeyosadchy.giphy.di.ApplicationContext;
+import com.alexeyosadchy.giphy.model.sharedpreferences.SharedPreferencesHelper;
+import com.alexeyosadchy.giphy.model.storage.GifRetainHelper;
+import com.alexeyosadchy.giphy.presenter.FavoriteGifsPresenter;
 import com.alexeyosadchy.giphy.presenter.ITrendGifListPresenter;
 import com.alexeyosadchy.giphy.presenter.TrendGifListPresenter;
 
@@ -13,9 +17,9 @@ import dagger.Provides;
 import io.reactivex.disposables.CompositeDisposable;
 
 @Module
-public class ActivityModule {
+public final class ActivityModule {
 
-    private AppCompatActivity mActivity;
+    private final AppCompatActivity mActivity;
 
     public ActivityModule(AppCompatActivity mActivity) {
         this.mActivity = mActivity;
@@ -38,7 +42,19 @@ public class ActivityModule {
     }
 
     @Provides
+    GifRetainHelper proGifRetainHelper(@ApplicationContext Context context){
+        return new GifRetainHelper(context);
+    }
+
+    @Provides
     ITrendGifListPresenter provideITrendGifListPresenter(TrendGifListPresenter presenter) {
         return presenter;
+    }
+
+    @Provides
+    FavoriteGifsPresenter provideFavoriteGifsPresenter(CompositeDisposable compositeDisposable,
+                                                       SharedPreferencesHelper sharedPreferencesHelper,
+                                                       GifRetainHelper gifRetainHelper) {
+        return new FavoriteGifsPresenter(compositeDisposable, sharedPreferencesHelper, gifRetainHelper);
     }
 }

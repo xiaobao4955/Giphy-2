@@ -2,7 +2,8 @@ package com.alexeyosadchy.giphy.di.component;
 
 import com.alexeyosadchy.giphy.di.PerActivity;
 import com.alexeyosadchy.giphy.di.module.ActivityModule;
-import com.alexeyosadchy.giphy.view.TrendGifListActivity;
+import com.alexeyosadchy.giphy.view.screens.trends.TrendGifListActivity;
+import com.alexeyosadchy.giphy.view.screens.favorite.FavoriteGifListActivity;
 
 import dagger.Component;
 
@@ -11,4 +12,6 @@ import dagger.Component;
 public interface ActivityComponent {
 
     void inject(TrendGifListActivity activity);
+
+    void inject(FavoriteGifListActivity activity);
 }

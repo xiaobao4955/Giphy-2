@@ -6,7 +6,6 @@ import java.util.List;
 
 import io.reactivex.Observable;
 
-
 public interface ApiManager {
 
     Observable<List<Images>> getTrendingGifs(int limits, int offset);

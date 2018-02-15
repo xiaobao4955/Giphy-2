@@ -15,11 +15,11 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
-public class ApiModule {
+public final class ApiModule {
 
     @Provides
     @Singleton
-    public Retrofit provideRestAdapter(@ApplicationContext Context context) {
+    Retrofit provideRestAdapter(@ApplicationContext Context context) {
         Retrofit.Builder builder = new Retrofit.Builder();
         builder.baseUrl(context.getString(R.string.api_url))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -29,7 +29,7 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    public ApiService provideApiService(Retrofit restAdapter) {
+    ApiService provideApiService(Retrofit restAdapter) {
         return restAdapter.create(ApiService.class);
     }
 }
