@@ -42,7 +42,7 @@ public abstract class BaseListGifActivity extends AppCompatActivity implements B
     protected RecyclerView mRecyclerView;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mActivityComponent = DaggerActivityComponent.builder()
                 .applicationComponent(((App) getApplication()).getApplicationComponent())
@@ -51,10 +51,11 @@ public abstract class BaseListGifActivity extends AppCompatActivity implements B
     }
 
     @Override
-    public void prepareView(List<GifView> gifs, int position) {
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+    public void prepareView(final List<GifView> gifs, final int position) {
+        final int orientation = getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             layoutManager = new LinearLayoutManager(this);
-        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         }
         mRecyclerView.setLayoutManager(layoutManager);
@@ -68,7 +69,7 @@ public abstract class BaseListGifActivity extends AppCompatActivity implements B
     }
 
     @Override
-    public void updateList(int position) {
+    public void updateList(final int position) {
         mGifListAdapter.notifyItemChanged(position);
     }
 
@@ -94,7 +95,7 @@ public abstract class BaseListGifActivity extends AppCompatActivity implements B
     }
 
     @Override
-    public void showError(String message, ITrendGifListActivity.Callback callback) {
+    public void showError(final String message, final ITrendGifListActivity.Callback callback) {
         if (message != null) {
             showSnackBar(message, callback);
         } else {
@@ -103,20 +104,20 @@ public abstract class BaseListGifActivity extends AppCompatActivity implements B
     }
 
     @Override
-    public void showMessage(String message) {
+    public void showMessage(final String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    private void showSnackBar(String message, ITrendGifListActivity.Callback callback) {
-        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content),
+    private void showSnackBar(final String message, final ITrendGifListActivity.Callback callback) {
+        final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content),
                 message, Snackbar.LENGTH_INDEFINITE).setAction(R.string.text_btn_snackbar, view -> callback.call());
-        View sbView = snackbar.getView();
-        TextView textView = sbView.findViewById(android.support.design.R.id.snackbar_text);
+        final View sbView = snackbar.getView();
+        final TextView textView = sbView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(ContextCompat.getColor(this, R.color.text_color_inverse));
         snackbar.show();
     }
 
-    protected void setUnBinder(Unbinder unBinder) {
+    protected void setUnBinder(final Unbinder unBinder) {
         mUnBinder = unBinder;
     }
 }

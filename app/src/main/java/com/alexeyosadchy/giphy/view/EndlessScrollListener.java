@@ -6,17 +6,19 @@ import com.alexeyosadchy.giphy.utils.AdapterUtils;
 
 public abstract class EndlessScrollListener extends RecyclerView.OnScrollListener {
 
+    private static final int VISIBLE_THRESHOLD = 3;
+
     private int previousTotal;
     private boolean loading = true;
 
     @Override
-    public final void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+    public final void onScrolled(final RecyclerView recyclerView, final int dx, final int dy) {
         super.onScrolled(recyclerView, dx, dy);
 
         if (dx != 0 || dy != 0) {
-            int visibleItemCount = recyclerView.getChildCount();
-            int totalItemCount = recyclerView.getAdapter().getItemCount();
-            int firstVisibleItem = AdapterUtils.getCurrentRecyclerViewPosition(recyclerView);
+            final int visibleItemCount = recyclerView.getChildCount();
+            final int totalItemCount = recyclerView.getAdapter().getItemCount();
+            final int firstVisibleItem = AdapterUtils.getCurrentRecyclerViewPosition(recyclerView);
 
             if (loading) {
                 if (totalItemCount > previousTotal) {
@@ -24,8 +26,7 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
                     previousTotal = totalItemCount;
                 }
             }
-            int visibleThreshold = 3;
-            if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
+            if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + VISIBLE_THRESHOLD)) {
                 onEndList();
                 loading = true;
             }

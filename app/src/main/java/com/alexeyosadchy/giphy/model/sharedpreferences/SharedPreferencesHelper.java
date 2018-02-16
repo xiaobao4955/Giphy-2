@@ -18,35 +18,35 @@ public final class SharedPreferencesHelper {
     private final Gson gson;
 
     @Inject
-    public SharedPreferencesHelper(SharedPreferences sharedPreferences) {
+    public SharedPreferencesHelper(final SharedPreferences sharedPreferences) {
         gifFilePreferences = sharedPreferences;
         editor = gifFilePreferences.edit();
         gson = new Gson();
     }
 
-    public void put(GifView gif) {
-        String json = gson.toJson(gif);
+    public void put(final GifView gif) {
+        final String json = gson.toJson(gif);
         editor.putString(gif.getUri(), json);
         editor.commit();
     }
 
-    public void delete(String key) {
+    public void delete(final String key) {
         editor.remove(key);
         editor.commit();
     }
 
-    public String getFilePath(String key) {
+    public String getFilePath(final String key) {
         return gson.fromJson(gifFilePreferences.getString(key, null), GifView.class).getLocalePath();
     }
 
-    public boolean hasContainKey(String key) {
+    public boolean hasContainKey(final String key) {
         return gifFilePreferences.contains(key);
     }
 
     public List<GifView> getAllFilePath() {
-        List<GifView> gifs = new ArrayList<>();
-        for (Map.Entry<String, ?> pair : gifFilePreferences.getAll().entrySet()) {
-            GifView gif = gson.fromJson((String) pair.getValue(), GifView.class);
+        final List<GifView> gifs = new ArrayList<>();
+        for (final Map.Entry<String, ?> pair : gifFilePreferences.getAll().entrySet()) {
+            final GifView gif = gson.fromJson((String) pair.getValue(), GifView.class);
             gif.setSharedPreferencesKey(pair.getKey());
             gifs.add(gif);
         }

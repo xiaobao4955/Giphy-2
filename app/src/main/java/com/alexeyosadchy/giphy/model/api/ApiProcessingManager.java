@@ -8,6 +8,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public final class ApiProcessingManager implements ApiManager {
 
@@ -16,19 +18,23 @@ public final class ApiProcessingManager implements ApiManager {
     private final ApiService mApiService;
 
     @Inject
-    ApiProcessingManager(ApiService apiService) {
+    ApiProcessingManager(final ApiService apiService) {
         mApiService = apiService;
     }
 
     @Override
-    public Observable<List<Images>> getTrendingGifs(int limit, int offset) {
+    public Observable<List<Images>> getTrendingGifs(final int limit, final int offset) {
         return mApiService.getTrendingHighlights(API_KEY, limit, offset)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .map(ResponseDataMapper::transform);
     }
 
     @Override
-    public Observable<List<Images>> search(String phrase, int limit, int offset) {
+    public Observable<List<Images>> search(final String phrase, final int limit, final int offset) {
         return mApiService.search(API_KEY, phrase, limit, offset)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .map(ResponseDataMapper::transform);
     }
 }

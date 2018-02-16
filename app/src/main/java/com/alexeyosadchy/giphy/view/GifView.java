@@ -21,7 +21,7 @@ public final class GifView {
         return uri;
     }
 
-    public void setUri(String uri) {
+    public void setUri(final String uri) {
         this.uri = uri;
     }
 
@@ -29,7 +29,7 @@ public final class GifView {
         return width;
     }
 
-    public void setWidth(int width) {
+    public void setWidth(final int width) {
         this.width = width;
     }
 
@@ -37,7 +37,7 @@ public final class GifView {
         return height;
     }
 
-    public void setHeight(int height) {
+    public void setHeight(final int height) {
         this.height = height;
     }
 
@@ -45,7 +45,7 @@ public final class GifView {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -53,7 +53,7 @@ public final class GifView {
         return localePath;
     }
 
-    public void setLocalePath(String localePath) {
+    public void setLocalePath(final String localePath) {
         this.localePath = localePath;
     }
 
@@ -61,7 +61,7 @@ public final class GifView {
         return sharedPreferencesKey;
     }
 
-    public void setSharedPreferencesKey(String sharedPreferencesKey) {
+    public void setSharedPreferencesKey(final String sharedPreferencesKey) {
         this.sharedPreferencesKey = sharedPreferencesKey;
     }
 }

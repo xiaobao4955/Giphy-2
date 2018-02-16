@@ -21,7 +21,7 @@ public final class ApplicationModule {
 
     private final Context mContext;
 
-    public ApplicationModule(App context) {
+    public ApplicationModule(final App context) {
         this.mContext = context;
     }
 
@@ -34,19 +34,19 @@ public final class ApplicationModule {
 
     @Singleton
     @Provides
-    ApiManager provideApiManager(ApiProcessingManager apiProcessingManager) {
+    ApiManager provideApiManager(final ApiProcessingManager apiProcessingManager) {
         return apiProcessingManager;
     }
 
     @Singleton
     @Provides
-    SharedPreferencesHelper provideSharedPreferencesHelper(SharedPreferences sharedPreferences){
+    SharedPreferencesHelper provideSharedPreferencesHelper(final SharedPreferences sharedPreferences){
         return new SharedPreferencesHelper(sharedPreferences);
     }
 
     @Provides
     @Singleton
-    SharedPreferences provideSharedPreferences(@ApplicationContext Context context){
+    SharedPreferences provideSharedPreferences(@ApplicationContext final Context context){
         return context.getSharedPreferences(GIF_FILE_PREFERENCES_KEY, Context.MODE_PRIVATE);
     }
 }

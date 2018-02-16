@@ -32,7 +32,7 @@ public final class TrendGifListActivity extends BaseListGifActivity implements I
     ITrendGifListPresenter presenter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trend_gif_list);
         setUnBinder(ButterKnife.bind(this));
@@ -44,24 +44,24 @@ public final class TrendGifListActivity extends BaseListGifActivity implements I
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu_trend_gif_list_activity, menu);
-        MenuItem favoriteItem = menu.findItem(R.id.action_favorite);
+        final MenuItem favoriteItem = menu.findItem(R.id.action_favorite);
         favoriteItem.setOnMenuItemClickListener(menuItem -> {
             presenter.onClickMenuItemFavorite();
             return false;
         });
-        SearchView searchItem = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        final SearchView searchItem = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchItem.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String query) {
+            public boolean onQueryTextSubmit(final String query) {
                 searchQuery = query;
                 presenter.onSearchSubmit(query);
                 return false;
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
+            public boolean onQueryTextChange(final String newText) {
                 return false;
             }
         });
@@ -101,16 +101,16 @@ public final class TrendGifListActivity extends BaseListGifActivity implements I
     }
 
     @Override
-    public void prepareView(List<GifView> gifs, int position) {
+    public void prepareView(final List<GifView> gifs, final int position) {
         super.prepareView(gifs, position);
-        BaseFavoriteButton button = new BaseFavoriteButton() {
+        final BaseFavoriteButton button = new BaseFavoriteButton() {
             @Override
-            public void action(int position) {
+            public void action(final int position) {
                 presenter.onClickFavoriteButton(position);
             }
 
             @Override
-            public int getImageResources(int position) {
+            public int getImageResources(final int position) {
                 if (presenter.onBindView(position)) {
                     return R.drawable.ic_favorite;
                 } else {
@@ -130,7 +130,7 @@ public final class TrendGifListActivity extends BaseListGifActivity implements I
 
     @Override
     public void navigateToFavoriteGifsActivity() {
-        Intent intent = new Intent(TrendGifListActivity.this, FavoriteGifListActivity.class);
+        final Intent intent = new Intent(TrendGifListActivity.this, FavoriteGifListActivity.class);
         startActivity(intent);
     }
 
@@ -140,7 +140,7 @@ public final class TrendGifListActivity extends BaseListGifActivity implements I
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
+    public void onConfigurationChanged(final Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         presenter.onConfigurationChanged(AdapterUtils.getCurrentRecyclerViewPosition(mRecyclerView));
     }

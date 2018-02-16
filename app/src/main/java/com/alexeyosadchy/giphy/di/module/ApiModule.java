@@ -19,8 +19,8 @@ public final class ApiModule {
 
     @Provides
     @Singleton
-    Retrofit provideRestAdapter(@ApplicationContext Context context) {
-        Retrofit.Builder builder = new Retrofit.Builder();
+    Retrofit provideRestAdapter(@ApplicationContext final Context context) {
+        final Retrofit.Builder builder = new Retrofit.Builder();
         builder.baseUrl(context.getString(R.string.api_url))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create());
@@ -29,7 +29,7 @@ public final class ApiModule {
 
     @Provides
     @Singleton
-    ApiService provideApiService(Retrofit restAdapter) {
+    ApiService provideApiService(final Retrofit restAdapter) {
         return restAdapter.create(ApiService.class);
     }
 }

@@ -9,11 +9,11 @@ import java.util.List;
 
 final class Mapper {
 
-    static List<GifView> transform(List<Images> imageList) {
-        List<GifView> gifs = new ArrayList<>();
-        for (Images image : imageList) {
-            FixedHeight fixedHeight = image.getFixedHeight();
-            GifView gif = new GifView();
+    static List<GifView> transform(final List<Images> imageList) {
+        final List<GifView> gifs = new ArrayList<>();
+        for (final Images image : imageList) {
+            final FixedHeight fixedHeight = image.getFixedHeight();
+            final GifView gif = new GifView();
             gif.setHeight(Integer.valueOf(fixedHeight.getHeight()));
             gif.setWidth(Integer.valueOf(fixedHeight.getWidth()));
             gif.setUri(fixedHeight.getUrl());

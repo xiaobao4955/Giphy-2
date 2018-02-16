@@ -2,7 +2,7 @@ package com.alexeyosadchy.giphy.presenter;
 
 import com.alexeyosadchy.giphy.model.api.ApiManager;
 import com.alexeyosadchy.giphy.model.sharedpreferences.SharedPreferencesHelper;
-import com.alexeyosadchy.giphy.model.storage.GifRetainHelper;
+import com.alexeyosadchy.giphy.model.storage.GifStorage;
 import com.alexeyosadchy.giphy.view.GifView;
 import com.alexeyosadchy.giphy.view.screens.trends.ITrendGifListActivity;
 import com.alexeyosadchy.giphy.view.screens.trends.TrendGifListActivity;
@@ -14,11 +14,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 
 public final class TrendGifListPresenter implements ITrendGifListPresenter {
 
@@ -28,23 +26,23 @@ public final class TrendGifListPresenter implements ITrendGifListPresenter {
     private final ApiManager mApiManager;
     private final List<GifView> mGifViews;
     private final CompositeDisposable mDisposable;
-    private final GifRetainHelper mGifRetainHelper;
+    private final GifStorage mGifStorage;
     private final SharedPreferencesHelper preferences;
 
     @Inject
-    TrendGifListPresenter(ApiManager apiManager,
-                          CompositeDisposable disposable,
-                          GifRetainHelper gifRetainHelper,
-                          SharedPreferencesHelper sharedPreferencesHelper) {
+    TrendGifListPresenter(final ApiManager apiManager,
+                          final CompositeDisposable disposable,
+                          final GifStorage gifStorage,
+                          final SharedPreferencesHelper sharedPreferencesHelper) {
         mApiManager = apiManager;
         mDisposable = disposable;
-        mGifRetainHelper = gifRetainHelper;
+        mGifStorage = gifStorage;
         preferences = sharedPreferencesHelper;
         mGifViews = new ArrayList<>();
     }
 
     @Override
-    public void onConfigurationChanged(int firstVisiblePosition) {
+    public void onConfigurationChanged(final int firstVisiblePosition) {
         mView.prepareView(mGifViews, firstVisiblePosition);
     }
 
@@ -62,12 +60,12 @@ public final class TrendGifListPresenter implements ITrendGifListPresenter {
 
     private void load() {
         mView.showLoading();
-        Consumer<List<GifView>> onNext = gifViews -> {
+        final Consumer<List<GifView>> onNext = gifViews -> {
             mGifViews.addAll(gifViews);
             mView.updateList();
             mView.hideLoading();
         };
-        Consumer<Throwable> onError = throwable -> errorHandling(throwable, this::loadGifs);
+        final Consumer<Throwable> onError = throwable -> errorHandling(throwable, this::loadGifs);
         if (mView.isSearchModeActive()) {
             getFoundGifs(onNext, onError, mView.getSearchQuery());
         } else {
@@ -76,31 +74,31 @@ public final class TrendGifListPresenter implements ITrendGifListPresenter {
     }
 
     @Override
-    public void onClickFavoriteButton(int position) {
-        if (preferences.hasContainKey(mGifViews.get(position).getUri())) {
-
+    public void onClickFavoriteButton(final int position) {
+        final String key = mGifViews.get(position).getUri();
+        if (preferences.hasContainKey(key)) {
             deleteGifFromStorage(() -> {
-                        preferences.delete(mGifViews.get(position).getUri());
+                        preferences.delete(key);
                         mView.updateList(position);
                     },
-                    preferences.getFilePath(mGifViews.get(position).getUri()));
+                    preferences.getFilePath(key));
         } else {
             saveGifToLocalStorage(path -> {
                         mGifViews.get(position).setLocalePath(path);
                         preferences.put(mGifViews.get(position));
                         mView.updateList(position);
                     },
-                    mGifViews.get(position).getUri());
+                    key);
         }
     }
 
     @Override
-    public boolean onBindView(int position) {
+    public boolean onBindView(final int position) {
         return preferences.hasContainKey(mGifViews.get(position).getUri());
     }
 
     @Override
-    public void onSearchSubmit(String query) {
+    public void onSearchSubmit(final String query) {
         if (!mView.isSearchModeActive()) {
             mView.switchSearchMode();
         }
@@ -112,38 +110,30 @@ public final class TrendGifListPresenter implements ITrendGifListPresenter {
         mView.navigateToFavoriteGifsActivity();
     }
 
-    private void deleteGifFromStorage(Action onComplete, String path) {
-        mDisposable.add(mGifRetainHelper.deleteGif(path)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+    private void deleteGifFromStorage(final Action onComplete, final String path) {
+        mDisposable.add(mGifStorage.deleteGif(path)
                 .subscribe(onComplete, throwable -> mView.showMessage(throwable.getLocalizedMessage())));
     }
 
-    private void saveGifToLocalStorage(Consumer<? super String> onNext, String uri) {
-        mDisposable.add(mGifRetainHelper.saveGif(uri)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+    private void saveGifToLocalStorage(final Consumer<? super String> onNext, final String uri) {
+        mDisposable.add(mGifStorage.saveGif(uri)
                 .subscribe(onNext, throwable -> mView.showMessage(throwable.getLocalizedMessage())));
     }
 
-    private void getFoundGifs(Consumer<? super List<GifView>> onNext, Consumer<? super Throwable> onError, String query) {
+    private void getFoundGifs(final Consumer<? super List<GifView>> onNext, final Consumer<? super Throwable> onError, final String query) {
         mDisposable.add(mApiManager.search(query, LIMIT_RECORDS, mGifViews.size())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .map(Mapper::transform)
                 .subscribe(onNext, onError));
     }
 
-    private void getTrendingGifs(Consumer<? super List<GifView>> onNext, Consumer<? super Throwable> onError) {
+    private void getTrendingGifs(final Consumer<? super List<GifView>> onNext, final Consumer<? super Throwable> onError) {
         mDisposable.add(mApiManager.getTrendingGifs(LIMIT_RECORDS, mGifViews.size())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .map(Mapper::transform)
                 .subscribe(onNext, onError));
     }
 
     @Override
-    public void onAttach(ITrendGifListActivity view) {
+    public void onAttach(final ITrendGifListActivity view) {
         mView = view;
     }
 
@@ -153,7 +143,7 @@ public final class TrendGifListPresenter implements ITrendGifListPresenter {
         mDisposable.dispose();
     }
 
-    private void errorHandling(Throwable t, TrendGifListActivity.Callback callback) {
+    private void errorHandling(final Throwable t, final TrendGifListActivity.Callback callback) {
         mView.hideLoading();
         if (t instanceof ConnectException || t instanceof UnknownHostException) {
             mView.showError("There is no internet connection", callback);

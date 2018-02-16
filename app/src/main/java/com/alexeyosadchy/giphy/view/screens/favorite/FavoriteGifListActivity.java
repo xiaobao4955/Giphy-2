@@ -22,7 +22,7 @@ public final class FavoriteGifListActivity extends BaseListGifActivity {
     FavoriteGifsPresenter presenter;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trend_gif_list);
 
@@ -35,16 +35,16 @@ public final class FavoriteGifListActivity extends BaseListGifActivity {
     }
 
     @Override
-    public void prepareView(List<GifView> gifs, int position) {
+    public void prepareView(final List<GifView> gifs, final int position) {
         super.prepareView(gifs, position);
         mGifListAdapter = new GifListAdapter(gifs, layoutManager, new BaseFavoriteButton() {
             @Override
-            public void action(int position) {
+            public void action(final int position) {
                 presenter.onClickFavoriteButton(position);
             }
 
             @Override
-            public int getImageResources(int position) {
+            public int getImageResources(final int position) {
                 return R.drawable.ic_delete;
             }
         });
@@ -52,7 +52,7 @@ public final class FavoriteGifListActivity extends BaseListGifActivity {
     }
 
     @Override
-    public void updateList(int position) {
+    public void updateList(final int position) {
         mGifListAdapter.notifyItemRemoved(position);
     }
 

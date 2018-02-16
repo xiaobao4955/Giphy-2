@@ -2,12 +2,11 @@ package com.alexeyosadchy.giphy.di.module;
 
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 
 import com.alexeyosadchy.giphy.di.ActivityContext;
 import com.alexeyosadchy.giphy.di.ApplicationContext;
 import com.alexeyosadchy.giphy.model.sharedpreferences.SharedPreferencesHelper;
-import com.alexeyosadchy.giphy.model.storage.GifRetainHelper;
+import com.alexeyosadchy.giphy.model.storage.GifStorage;
 import com.alexeyosadchy.giphy.presenter.FavoriteGifsPresenter;
 import com.alexeyosadchy.giphy.presenter.ITrendGifListPresenter;
 import com.alexeyosadchy.giphy.presenter.TrendGifListPresenter;
@@ -21,7 +20,7 @@ public final class ActivityModule {
 
     private final AppCompatActivity mActivity;
 
-    public ActivityModule(AppCompatActivity mActivity) {
+    public ActivityModule(final AppCompatActivity mActivity) {
         this.mActivity = mActivity;
     }
 
@@ -42,19 +41,19 @@ public final class ActivityModule {
     }
 
     @Provides
-    GifRetainHelper proGifRetainHelper(@ApplicationContext Context context){
-        return new GifRetainHelper(context);
+    GifStorage proGifRetainHelper(@ApplicationContext final Context context){
+        return new GifStorage(context);
     }
 
     @Provides
-    ITrendGifListPresenter provideITrendGifListPresenter(TrendGifListPresenter presenter) {
+    ITrendGifListPresenter provideITrendGifListPresenter(final TrendGifListPresenter presenter) {
         return presenter;
     }
 
     @Provides
-    FavoriteGifsPresenter provideFavoriteGifsPresenter(CompositeDisposable compositeDisposable,
-                                                       SharedPreferencesHelper sharedPreferencesHelper,
-                                                       GifRetainHelper gifRetainHelper) {
-        return new FavoriteGifsPresenter(compositeDisposable, sharedPreferencesHelper, gifRetainHelper);
+    FavoriteGifsPresenter provideFavoriteGifsPresenter(final CompositeDisposable compositeDisposable,
+                                                       final SharedPreferencesHelper sharedPreferencesHelper,
+                                                       final GifStorage gifStorage) {
+        return new FavoriteGifsPresenter(compositeDisposable, sharedPreferencesHelper, gifStorage);
     }
 }

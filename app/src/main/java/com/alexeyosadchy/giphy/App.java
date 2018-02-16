@@ -19,7 +19,6 @@ public final class App extends Application {
                 .applicationModule(new ApplicationModule(this))
                 .build();
         Fresco.initialize(this);
-        Fresco.getImagePipeline().clearCaches();
     }
 
     public ApplicationComponent getApplicationComponent() {

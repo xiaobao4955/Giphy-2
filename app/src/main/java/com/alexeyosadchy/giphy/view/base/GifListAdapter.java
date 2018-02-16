@@ -27,22 +27,23 @@ public final class GifListAdapter extends RecyclerView.Adapter<GifListAdapter.Gi
     private final RecyclerView.LayoutManager mLayoutManager;
     private final BaseFavoriteButton mButton;
 
-    public GifListAdapter(List<GifView> gifs, RecyclerView.LayoutManager layoutManager, BaseFavoriteButton button) {
+    public GifListAdapter(final List<GifView> gifs, final RecyclerView.LayoutManager layoutManager, final BaseFavoriteButton button) {
         mGifs = gifs;
         mLayoutManager = layoutManager;
         mButton = button;
     }
 
     @Override
-    public GifHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_gif, parent, false);
+    public GifHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_gif, parent, false);
         return new GifHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(GifHolder holder, int position) {
+    public void onBindViewHolder(final GifHolder holder, final int position) {
+        final int height = mGifs.get(position).getHeight();
         float scaleFactor = DEFAULT_SCALE_FACTOR;
-        DraweeController controller = Fresco.newDraweeControllerBuilder()
+        final DraweeController controller = Fresco.newDraweeControllerBuilder()
                 .setUri(mGifs.get(position).getUri())
                 .setAutoPlayAnimations(true)
                 .build();
@@ -53,9 +54,9 @@ public final class GifListAdapter extends RecyclerView.Adapter<GifListAdapter.Gi
         } else if (mLayoutManager instanceof StaggeredGridLayoutManager) {
             scaleFactor = (float) mLayoutManager.getWidth() /
                     ((StaggeredGridLayoutManager) mLayoutManager).getSpanCount() /
-                    mGifs.get(position).getHeight();
+                    height;
         }
-        holder.mCardView.getLayoutParams().height = (int) ((float) mGifs.get(position).getHeight() * scaleFactor);
+        holder.mCardView.getLayoutParams().height = (int) ((float) height * scaleFactor);
         holder.mSimpleDraweeView.getHierarchy().setPlaceholderImage(AdapterUtils.getRandomColor());
         holder.mFavoriteButton.setImageResource(mButton.getImageResources(position));
     }
@@ -71,7 +72,7 @@ public final class GifListAdapter extends RecyclerView.Adapter<GifListAdapter.Gi
         private final SimpleDraweeView mSimpleDraweeView;
         private final ImageButton mFavoriteButton;
 
-        GifHolder(View itemView) {
+        GifHolder(final View itemView) {
             super(itemView);
             mCardView = itemView.findViewById(R.id.card_view_gif);
             mSimpleDraweeView = itemView.findViewById(R.id.my_image_view);

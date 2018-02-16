@@ -1,9 +1,9 @@
 package com.alexeyosadchy.giphy.view.base;
 
-public abstract class BaseFavoriteButton {
+public interface BaseFavoriteButton {
 
-    protected abstract void action(int position);
+    void action(int position);
 
-    protected abstract int getImageResources(int position);
+    int getImageResources(int position);
 
 }
