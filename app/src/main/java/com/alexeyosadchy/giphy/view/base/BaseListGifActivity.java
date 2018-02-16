@@ -19,7 +19,7 @@ import com.alexeyosadchy.giphy.R;
 import com.alexeyosadchy.giphy.di.component.ActivityComponent;
 import com.alexeyosadchy.giphy.di.component.DaggerActivityComponent;
 import com.alexeyosadchy.giphy.di.module.ActivityModule;
-import com.alexeyosadchy.giphy.view.GifView;
+import com.alexeyosadchy.giphy.model.storage.GifView;
 import com.alexeyosadchy.giphy.view.screens.trends.ITrendGifListActivity;
 
 import java.util.List;

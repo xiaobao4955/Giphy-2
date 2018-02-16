@@ -1,11 +1,11 @@
 package com.alexeyosadchy.giphy.di.module;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 
 import com.alexeyosadchy.giphy.di.ActivityContext;
 import com.alexeyosadchy.giphy.di.ApplicationContext;
-import com.alexeyosadchy.giphy.model.sharedpreferences.SharedPreferencesHelper;
 import com.alexeyosadchy.giphy.model.storage.GifStorage;
 import com.alexeyosadchy.giphy.presenter.FavoriteGifsPresenter;
 import com.alexeyosadchy.giphy.presenter.ITrendGifListPresenter;
@@ -31,7 +31,7 @@ public final class ActivityModule {
     }
 
     @Provides
-    CompositeDisposable provideCompositeDisposable(){
+    CompositeDisposable provideCompositeDisposable() {
         return new CompositeDisposable();
     }
 
@@ -41,8 +41,8 @@ public final class ActivityModule {
     }
 
     @Provides
-    GifStorage proGifRetainHelper(@ApplicationContext final Context context){
-        return new GifStorage(context);
+    GifStorage proGifRetainHelper(@ApplicationContext final Context context, final SharedPreferences sharedPreferences) {
+        return new GifStorage(context, sharedPreferences);
     }
 
     @Provides
@@ -52,8 +52,7 @@ public final class ActivityModule {
 
     @Provides
     FavoriteGifsPresenter provideFavoriteGifsPresenter(final CompositeDisposable compositeDisposable,
-                                                       final SharedPreferencesHelper sharedPreferencesHelper,
                                                        final GifStorage gifStorage) {
-        return new FavoriteGifsPresenter(compositeDisposable, sharedPreferencesHelper, gifStorage);
+        return new FavoriteGifsPresenter(compositeDisposable, gifStorage);
     }
 }

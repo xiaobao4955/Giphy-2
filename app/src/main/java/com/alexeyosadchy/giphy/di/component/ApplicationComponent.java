@@ -1,12 +1,12 @@
 package com.alexeyosadchy.giphy.di.component;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.alexeyosadchy.giphy.di.ApplicationContext;
 import com.alexeyosadchy.giphy.di.module.ApiModule;
 import com.alexeyosadchy.giphy.di.module.ApplicationModule;
 import com.alexeyosadchy.giphy.model.api.ApiManager;
-import com.alexeyosadchy.giphy.model.sharedpreferences.SharedPreferencesHelper;
 
 import javax.inject.Singleton;
 
@@ -21,5 +21,5 @@ public interface ApplicationComponent {
 
     ApiManager getApiManager();
 
-    SharedPreferencesHelper getSharedPreferencesHelper();
+    SharedPreferences getSharedPreferences();
 }

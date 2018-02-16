@@ -1,4 +1,4 @@
-package com.alexeyosadchy.giphy.view;
+package com.alexeyosadchy.giphy.model.storage;
 
 import com.google.gson.annotations.Expose;
 
@@ -53,15 +53,15 @@ public final class GifView {
         return localePath;
     }
 
-    public void setLocalePath(final String localePath) {
+    void setLocalePath(final String localePath) {
         this.localePath = localePath;
     }
 
-    public String getSharedPreferencesKey() {
+    String getSharedPreferencesKey() {
         return sharedPreferencesKey;
     }
 
-    public void setSharedPreferencesKey(final String sharedPreferencesKey) {
+    void setSharedPreferencesKey(final String sharedPreferencesKey) {
         this.sharedPreferencesKey = sharedPreferencesKey;
     }
 }

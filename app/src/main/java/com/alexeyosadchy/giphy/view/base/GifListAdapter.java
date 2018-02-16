@@ -10,8 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import com.alexeyosadchy.giphy.R;
+import com.alexeyosadchy.giphy.model.storage.GifView;
 import com.alexeyosadchy.giphy.utils.AdapterUtils;
-import com.alexeyosadchy.giphy.view.GifView;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.drawable.ProgressBarDrawable;
 import com.facebook.drawee.interfaces.DraweeController;

@@ -8,10 +8,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.alexeyosadchy.giphy.R;
+import com.alexeyosadchy.giphy.model.storage.GifView;
 import com.alexeyosadchy.giphy.presenter.ITrendGifListPresenter;
 import com.alexeyosadchy.giphy.utils.AdapterUtils;
 import com.alexeyosadchy.giphy.view.EndlessScrollListener;
-import com.alexeyosadchy.giphy.view.GifView;
 import com.alexeyosadchy.giphy.view.base.BaseFavoriteButton;
 import com.alexeyosadchy.giphy.view.base.BaseListGifActivity;
 import com.alexeyosadchy.giphy.view.base.GifListAdapter;

@@ -2,7 +2,7 @@ package com.alexeyosadchy.giphy.presenter;
 
 import com.alexeyosadchy.giphy.model.api.response.FixedHeight;
 import com.alexeyosadchy.giphy.model.api.response.Images;
-import com.alexeyosadchy.giphy.view.GifView;
+import com.alexeyosadchy.giphy.model.storage.GifView;
 
 import java.util.ArrayList;
 import java.util.List;

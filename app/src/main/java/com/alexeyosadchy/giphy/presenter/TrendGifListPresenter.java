@@ -1,9 +1,8 @@
 package com.alexeyosadchy.giphy.presenter;
 
 import com.alexeyosadchy.giphy.model.api.ApiManager;
-import com.alexeyosadchy.giphy.model.sharedpreferences.SharedPreferencesHelper;
 import com.alexeyosadchy.giphy.model.storage.GifStorage;
-import com.alexeyosadchy.giphy.view.GifView;
+import com.alexeyosadchy.giphy.model.storage.GifView;
 import com.alexeyosadchy.giphy.view.screens.trends.ITrendGifListActivity;
 import com.alexeyosadchy.giphy.view.screens.trends.TrendGifListActivity;
 
@@ -27,17 +26,14 @@ public final class TrendGifListPresenter implements ITrendGifListPresenter {
     private final List<GifView> mGifViews;
     private final CompositeDisposable mDisposable;
     private final GifStorage mGifStorage;
-    private final SharedPreferencesHelper preferences;
 
     @Inject
     TrendGifListPresenter(final ApiManager apiManager,
                           final CompositeDisposable disposable,
-                          final GifStorage gifStorage,
-                          final SharedPreferencesHelper sharedPreferencesHelper) {
+                          final GifStorage gifStorage) {
         mApiManager = apiManager;
         mDisposable = disposable;
         mGifStorage = gifStorage;
-        preferences = sharedPreferencesHelper;
         mGifViews = new ArrayList<>();
     }
 
@@ -75,26 +71,18 @@ public final class TrendGifListPresenter implements ITrendGifListPresenter {
 
     @Override
     public void onClickFavoriteButton(final int position) {
-        final String key = mGifViews.get(position).getUri();
-        if (preferences.hasContainKey(key)) {
-            deleteGifFromStorage(() -> {
-                        preferences.delete(key);
-                        mView.updateList(position);
-                    },
-                    preferences.getFilePath(key));
+        final GifView gif = mGifViews.get(position);
+        final Action onComplete = () -> mView.updateList(position);
+        if (mGifStorage.hasContainGif(gif)) {
+            deleteGifFromStorage(onComplete, gif);
         } else {
-            saveGifToLocalStorage(path -> {
-                        mGifViews.get(position).setLocalePath(path);
-                        preferences.put(mGifViews.get(position));
-                        mView.updateList(position);
-                    },
-                    key);
+            saveGifToLocalStorage(onComplete, gif);
         }
     }
 
     @Override
     public boolean onBindView(final int position) {
-        return preferences.hasContainKey(mGifViews.get(position).getUri());
+        return mGifStorage.hasContainGif(mGifViews.get(position));
     }
 
     @Override
@@ -110,14 +98,14 @@ public final class TrendGifListPresenter implements ITrendGifListPresenter {
         mView.navigateToFavoriteGifsActivity();
     }
 
-    private void deleteGifFromStorage(final Action onComplete, final String path) {
-        mDisposable.add(mGifStorage.deleteGif(path)
+    private void deleteGifFromStorage(final Action onComplete, final GifView gif) {
+        mDisposable.add(mGifStorage.deleteGif(gif)
                 .subscribe(onComplete, throwable -> mView.showMessage(throwable.getLocalizedMessage())));
     }
 
-    private void saveGifToLocalStorage(final Consumer<? super String> onNext, final String uri) {
-        mDisposable.add(mGifStorage.saveGif(uri)
-                .subscribe(onNext, throwable -> mView.showMessage(throwable.getLocalizedMessage())));
+    private void saveGifToLocalStorage(final Action onComplete, final GifView gif) {
+        mDisposable.add(mGifStorage.saveGif(gif)
+                .subscribe(onComplete, throwable -> mView.showMessage(throwable.getLocalizedMessage())));
     }
 
     private void getFoundGifs(final Consumer<? super List<GifView>> onNext, final Consumer<? super Throwable> onError, final String query) {

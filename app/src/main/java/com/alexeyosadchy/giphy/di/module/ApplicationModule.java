@@ -7,7 +7,6 @@ import com.alexeyosadchy.giphy.App;
 import com.alexeyosadchy.giphy.di.ApplicationContext;
 import com.alexeyosadchy.giphy.model.api.ApiManager;
 import com.alexeyosadchy.giphy.model.api.ApiProcessingManager;
-import com.alexeyosadchy.giphy.model.sharedpreferences.SharedPreferencesHelper;
 
 import javax.inject.Singleton;
 
@@ -38,15 +37,9 @@ public final class ApplicationModule {
         return apiProcessingManager;
     }
 
-    @Singleton
-    @Provides
-    SharedPreferencesHelper provideSharedPreferencesHelper(final SharedPreferences sharedPreferences){
-        return new SharedPreferencesHelper(sharedPreferences);
-    }
-
     @Provides
     @Singleton
-    SharedPreferences provideSharedPreferences(@ApplicationContext final Context context){
+    SharedPreferences provideSharedPreferences(@ApplicationContext final Context context) {
         return context.getSharedPreferences(GIF_FILE_PREFERENCES_KEY, Context.MODE_PRIVATE);
     }
 }

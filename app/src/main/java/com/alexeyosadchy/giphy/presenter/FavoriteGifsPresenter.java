@@ -2,9 +2,8 @@ package com.alexeyosadchy.giphy.presenter;
 
 import android.net.Uri;
 
-import com.alexeyosadchy.giphy.model.sharedpreferences.SharedPreferencesHelper;
 import com.alexeyosadchy.giphy.model.storage.GifStorage;
-import com.alexeyosadchy.giphy.view.GifView;
+import com.alexeyosadchy.giphy.model.storage.GifView;
 import com.alexeyosadchy.giphy.view.screens.favorite.FavoriteGifListActivity;
 
 import java.io.File;
@@ -21,21 +20,18 @@ public final class FavoriteGifsPresenter {
     private FavoriteGifListActivity mView;
     private final List<GifView> mGifViews;
     private final CompositeDisposable mDisposable;
-    private final SharedPreferencesHelper preferences;
     private final GifStorage mGifStorage;
 
     @Inject
     public FavoriteGifsPresenter(final CompositeDisposable disposable,
-                                 final SharedPreferencesHelper sharedPreferencesHelper,
                                  final GifStorage gifStorage) {
         mDisposable = disposable;
-        preferences = sharedPreferencesHelper;
         mGifStorage = gifStorage;
         mGifViews = new ArrayList<>();
     }
 
     public void onCreateView() {
-        for (final GifView gif : preferences.getAllFilePath()) {
+        for (final GifView gif : mGifStorage.getAllSavedGifs()) {
             gif.setUri(Uri.fromFile(new File(gif.getLocalePath())).toString());
             mGifViews.add(gif);
         }
@@ -43,17 +39,15 @@ public final class FavoriteGifsPresenter {
     }
 
     public void onClickFavoriteButton(final int position) {
-        final String key = mGifViews.get(position).getSharedPreferencesKey();
+        final GifView gif = mGifViews.get(position);
         deleteGifFromStorage(() -> {
-                    preferences.delete(key);
-                    mGifViews.remove(position);
-                    mView.updateList(position);
-                },
-                preferences.getFilePath(key));
+            mGifViews.remove(position);
+            mView.updateList(position);
+        }, gif);
     }
 
-    private void deleteGifFromStorage(final Action onComplete, final String path) {
-        mDisposable.add(mGifStorage.deleteGif(path)
+    private void deleteGifFromStorage(final Action onComplete, final GifView gif) {
+        mDisposable.add(mGifStorage.deleteGif(gif)
                 .subscribe(onComplete, throwable -> mView.showMessage(throwable.getLocalizedMessage())));
     }
 
