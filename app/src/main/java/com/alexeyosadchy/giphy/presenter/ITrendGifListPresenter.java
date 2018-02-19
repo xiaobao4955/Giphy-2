@@ -1,10 +1,13 @@
 package com.alexeyosadchy.giphy.presenter;
 
-import com.alexeyosadchy.giphy.view.ITrendGifListActivity;
+import com.alexeyosadchy.giphy.view.screens.trends.ITrendGifListActivity;
 
 public interface ITrendGifListPresenter {
 
+    void onClickMenuItemFavorite();
+
     void onAttach(ITrendGifListActivity view);
+
     void onDetach();
 
     void onBackPressed();
@@ -13,9 +16,11 @@ public interface ITrendGifListPresenter {
 
     void onConfigurationChanged(int firstVisiblePosition);
 
-    void onLongClickItem(int position);
-
     void loadGifs();
+
+    void onClickFavoriteButton(int position);
+
+    boolean onBindView(int position);
 
     void onSearchSubmit(String query);
 }

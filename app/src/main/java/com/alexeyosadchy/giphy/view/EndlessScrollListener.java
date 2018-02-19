@@ -5,27 +5,20 @@ import android.support.v7.widget.RecyclerView;
 import com.alexeyosadchy.giphy.utils.AdapterUtils;
 
 public abstract class EndlessScrollListener extends RecyclerView.OnScrollListener {
-    public static String TAG = EndlessScrollListener.class.getSimpleName();
 
-    private int previousTotal = 0; // The total number of items in the dataset after the last load
-    private boolean loading = true; // True if we are still waiting for the last set of data to load.
-    private int visibleThreshold = 3; // The minimum amount of items to have below your current scroll position before loading more.
-    int firstVisibleItem, visibleItemCount, totalItemCount;
+    private static final int VISIBLE_THRESHOLD = 3;
 
-    private RecyclerView.LayoutManager mLayoutManager;
-
-    public EndlessScrollListener(RecyclerView.LayoutManager layoutManager) {
-        this.mLayoutManager = layoutManager;
-    }
+    private int previousTotal;
+    private boolean loading = true;
 
     @Override
-    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+    public final void onScrolled(final RecyclerView recyclerView, final int dx, final int dy) {
         super.onScrolled(recyclerView, dx, dy);
 
         if (dx != 0 || dy != 0) {
-            visibleItemCount = recyclerView.getChildCount();
-            totalItemCount = recyclerView.getAdapter().getItemCount();
-            firstVisibleItem = AdapterUtils.getCurrentRecyclerViewPosition(recyclerView);
+            final int visibleItemCount = recyclerView.getChildCount();
+            final int totalItemCount = recyclerView.getAdapter().getItemCount();
+            final int firstVisibleItem = AdapterUtils.getCurrentRecyclerViewPosition(recyclerView);
 
             if (loading) {
                 if (totalItemCount > previousTotal) {
@@ -33,12 +26,12 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
                     previousTotal = totalItemCount;
                 }
             }
-            if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
-                onLoadMore();
+            if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + VISIBLE_THRESHOLD)) {
+                onEndList();
                 loading = true;
             }
         }
     }
 
-    public abstract void onLoadMore();
+    public abstract void onEndList();
 }

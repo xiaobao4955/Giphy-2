@@ -1,4 +1,4 @@
-package com.alexeyosadchy.giphy.view;
+package com.alexeyosadchy.giphy.view.base;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -7,9 +7,10 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import com.alexeyosadchy.giphy.R;
-import com.alexeyosadchy.giphy.presenter.ITrendGifListPresenter;
+import com.alexeyosadchy.giphy.model.storage.GifView;
 import com.alexeyosadchy.giphy.utils.AdapterUtils;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.drawable.ProgressBarDrawable;
@@ -18,32 +19,31 @@ import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.List;
 
-public class GifListAdapter extends RecyclerView.Adapter<GifListAdapter.GifHolder> {
+public final class GifListAdapter extends RecyclerView.Adapter<GifListAdapter.GifHolder> {
 
-    private List<GifView> mGifs;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private ITrendGifListPresenter mPresenter;
+    private static final float DEFAULT_SCALE_FACTOR = 1f;
 
-    public GifListAdapter(List<GifView> gifs, RecyclerView.LayoutManager layoutManager, ITrendGifListPresenter presenter) {
+    private final List<GifView> mGifs;
+    private final RecyclerView.LayoutManager mLayoutManager;
+    private final BaseFavoriteButton mButton;
+
+    public GifListAdapter(final List<GifView> gifs, final RecyclerView.LayoutManager layoutManager, final BaseFavoriteButton button) {
         mGifs = gifs;
         mLayoutManager = layoutManager;
-        mPresenter = presenter;
-    }
-
-    public void setLayoutManager(RecyclerView.LayoutManager layoutManager) {
-        mLayoutManager = layoutManager;
+        mButton = button;
     }
 
     @Override
-    public GifHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_gif, parent, false);
+    public GifHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_view_gif, parent, false);
         return new GifHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(GifHolder holder, int position) {
-        float scaleFactor = 1f;
-        DraweeController controller = Fresco.newDraweeControllerBuilder()
+    public void onBindViewHolder(final GifHolder holder, final int position) {
+        final int height = mGifs.get(position).getHeight();
+        float scaleFactor = DEFAULT_SCALE_FACTOR;
+        final DraweeController controller = Fresco.newDraweeControllerBuilder()
                 .setUri(mGifs.get(position).getUri())
                 .setAutoPlayAnimations(true)
                 .build();
@@ -54,10 +54,11 @@ public class GifListAdapter extends RecyclerView.Adapter<GifListAdapter.GifHolde
         } else if (mLayoutManager instanceof StaggeredGridLayoutManager) {
             scaleFactor = (float) mLayoutManager.getWidth() /
                     ((StaggeredGridLayoutManager) mLayoutManager).getSpanCount() /
-                    mGifs.get(position).getHeight();
+                    height;
         }
-        holder.mCardView.getLayoutParams().height = (int) ((float) mGifs.get(position).getHeight() * scaleFactor);
+        holder.mCardView.getLayoutParams().height = (int) ((float) height * scaleFactor);
         holder.mSimpleDraweeView.getHierarchy().setPlaceholderImage(AdapterUtils.getRandomColor());
+        holder.mFavoriteButton.setImageResource(mButton.getImageResources(position));
     }
 
     @Override
@@ -65,22 +66,18 @@ public class GifListAdapter extends RecyclerView.Adapter<GifListAdapter.GifHolde
         return mGifs.size();
     }
 
-    public class GifHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
+    final class GifHolder extends RecyclerView.ViewHolder {
 
-        private CardView mCardView;
-        private SimpleDraweeView mSimpleDraweeView;
+        private final CardView mCardView;
+        private final SimpleDraweeView mSimpleDraweeView;
+        private final ImageButton mFavoriteButton;
 
-        public GifHolder(View itemView) {
+        GifHolder(final View itemView) {
             super(itemView);
             mCardView = itemView.findViewById(R.id.card_view_gif);
             mSimpleDraweeView = itemView.findViewById(R.id.my_image_view);
-            itemView.setOnLongClickListener(this);
-        }
-
-        @Override
-        public boolean onLongClick(View view) {
-            mPresenter.onLongClickItem(getAdapterPosition());
-            return false;
+            mFavoriteButton = itemView.findViewById(R.id.button_favorite);
+            mFavoriteButton.setOnClickListener(view -> mButton.action(getAdapterPosition()));
         }
     }
 }

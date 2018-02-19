@@ -8,7 +8,7 @@ import com.alexeyosadchy.giphy.R;
 
 import java.util.Random;
 
-public class AdapterUtils {
+public final class AdapterUtils {
 
     public static int getRandomColor() {
         switch (new Random().nextInt(11)) {
@@ -39,12 +39,12 @@ public class AdapterUtils {
         }
     }
 
-    public static int getCurrentRecyclerViewPosition(RecyclerView recyclerView) {
-        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+    public static int getCurrentRecyclerViewPosition(final RecyclerView recyclerView) {
+        final RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
         if (layoutManager instanceof LinearLayoutManager) {
             return ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
         } else if (layoutManager instanceof StaggeredGridLayoutManager) {
-            int[] position = new int[((StaggeredGridLayoutManager) layoutManager).getSpanCount()];
+            final int[] position = new int[((StaggeredGridLayoutManager) layoutManager).getSpanCount()];
             return ((StaggeredGridLayoutManager) layoutManager)
                     .findFirstVisibleItemPositions(position)[0];
         }

@@ -1,9 +1,10 @@
 package com.alexeyosadchy.giphy.presenter;
 
 import com.alexeyosadchy.giphy.model.api.ApiManager;
-import com.alexeyosadchy.giphy.view.GifView;
-import com.alexeyosadchy.giphy.view.ITrendGifListActivity;
-import com.alexeyosadchy.giphy.view.TrendGifListActivity;
+import com.alexeyosadchy.giphy.model.storage.GifStorage;
+import com.alexeyosadchy.giphy.model.storage.GifView;
+import com.alexeyosadchy.giphy.view.screens.trends.ITrendGifListActivity;
+import com.alexeyosadchy.giphy.view.screens.trends.TrendGifListActivity;
 
 import java.net.ConnectException;
 import java.net.UnknownHostException;
@@ -12,90 +13,100 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.Completable;
+import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
-import io.reactivex.schedulers.Schedulers;
 
-public class TrendGifListPresenter implements ITrendGifListPresenter {
+public final class TrendGifListPresenter implements ITrendGifListPresenter {
 
-    private static final int LIMIT_RECORDS = 12;
+    private static final int LIMIT_RECORDS = 10;
 
     private ITrendGifListActivity mView;
-    private ApiManager mApiManager;
-    private List<GifView> mGifViews;
-    private CompositeDisposable mDisposable;
+    private final ApiManager mApiManager;
+    private final List<GifView> mGifViews;
+    private final CompositeDisposable mDisposable;
+    private final GifStorage mGifStorage;
 
     @Inject
-    public TrendGifListPresenter(ApiManager apiManager, CompositeDisposable disposable) {
+    TrendGifListPresenter(final ApiManager apiManager,
+                          final CompositeDisposable disposable,
+                          final GifStorage gifStorage) {
         mApiManager = apiManager;
         mDisposable = disposable;
+        mGifStorage = gifStorage;
         mGifViews = new ArrayList<>();
     }
 
     @Override
-    public void onConfigurationChanged(int firstVisiblePosition) {
+    public void onConfigurationChanged(final int firstVisiblePosition) {
         mView.prepareView(mGifViews, firstVisiblePosition);
-    }
-
-    @Override
-    public void onLongClickItem(int position) {
-        mView.sendGif(mGifViews.get(position).getUri());
-    }
-
-    @Override
-    public void loadGifs() {
-        load();
     }
 
     @Override
     public void onCreateView() {
         mGifViews.clear();
         mView.prepareView(mGifViews, 0);
-        load();
+        loadGifs();
     }
 
-    private void load() {
+    @Override
+    public void loadGifs() {
         mView.showLoading();
-        Consumer<List<GifView>> onNext = gifViews -> {
-            mGifViews.addAll(gifViews);
-            mView.updateList();
-            mView.hideLoading();
-        };
-        Consumer<Throwable> onError = throwable -> errorHandling(throwable, this::loadGifs);
         if (mView.isSearchModeActive()) {
-            getFoundGifs(onNext, onError, mView.getSearchQuery());
+            subscribeRequestToApi(mApiManager.search(mView.getSearchQuery(), LIMIT_RECORDS, mGifViews.size()));
         } else {
-            getTrendingGifs(onNext, onError);
+            subscribeRequestToApi(mApiManager.getTrendingGifs(LIMIT_RECORDS, mGifViews.size()));
         }
     }
 
     @Override
-    public void onSearchSubmit(String query) {
+    public void onClickFavoriteButton(final int position) {
+        final GifView gif = mGifViews.get(position);
+        if (mGifStorage.hasContainGif(gif)) {
+            subscribeRequestToGifStorage(mGifStorage.deleteGif(gif), position);
+        } else {
+            subscribeRequestToGifStorage(mGifStorage.saveGif(gif), position);
+        }
+    }
+
+    @Override
+    public boolean onBindView(final int position) {
+        return mGifStorage.hasContainGif(mGifViews.get(position));
+    }
+
+    @Override
+    public void onSearchSubmit(final String query) {
         if (!mView.isSearchModeActive()) {
             mView.switchSearchMode();
         }
         onCreateView();
     }
 
-    private void getFoundGifs(Consumer<? super List<GifView>> onNext, Consumer<? super Throwable> onError, String query) {
-        mDisposable.add(mApiManager.search(query, LIMIT_RECORDS, mGifViews.size())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(Mapper::transform)
-                .subscribe(onNext, onError));
+    @Override
+    public void onClickMenuItemFavorite() {
+        mView.navigateToFavoriteGifsActivity();
     }
 
-    private void getTrendingGifs(Consumer<? super List<GifView>> onNext, Consumer<? super Throwable> onError) {
-        mDisposable.add(mApiManager.getTrendingGifs(LIMIT_RECORDS, mGifViews.size())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(Mapper::transform)
-                .subscribe(onNext, onError));
+    private void subscribeRequestToGifStorage(final Completable completable, final int position) {
+        final Action onComplete = () -> mView.updateList(position);
+        mDisposable.add(completable
+                .subscribe(onComplete, throwable -> mView.showMessage(throwable.getLocalizedMessage())));
+    }
+
+    private void subscribeRequestToApi(final Single<List<GifView>> single) {
+        final Consumer<List<GifView>> onNext = gifViews -> {
+            mGifViews.addAll(gifViews);
+            mView.updateList();
+            mView.hideLoading();
+        };
+        final Consumer<Throwable> onError = throwable -> errorHandling(throwable, this::loadGifs);
+        mDisposable.add(single.subscribe(onNext, onError));
     }
 
     @Override
-    public void onAttach(ITrendGifListActivity view) {
+    public void onAttach(final ITrendGifListActivity view) {
         mView = view;
     }
 
@@ -105,7 +116,7 @@ public class TrendGifListPresenter implements ITrendGifListPresenter {
         mDisposable.dispose();
     }
 
-    private void errorHandling(Throwable t, TrendGifListActivity.Callback callback) {
+    private void errorHandling(final Throwable t, final TrendGifListActivity.Callback callback) {
         mView.hideLoading();
         if (t instanceof ConnectException || t instanceof UnknownHostException) {
             mView.showError("There is no internet connection", callback);
