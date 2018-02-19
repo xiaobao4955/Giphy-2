@@ -7,21 +7,24 @@ public final class GifView {
     @Expose
     private String uri;
     @Expose
-    private String title;
+    private final String id;
     @Expose
-    private String localePath;
+    private final int width;
     @Expose
-    private String sharedPreferencesKey;
-    @Expose
-    private int width;
-    @Expose
-    private int height;
+    private final int height;
+
+    public GifView(final String uri, final String id, final int width, final int height) {
+        this.uri = uri;
+        this.id = id;
+        this.width = width;
+        this.height = height;
+    }
 
     public String getUri() {
         return uri;
     }
 
-    public void setUri(final String uri) {
+    void setUri(String uri) {
         this.uri = uri;
     }
 
@@ -29,39 +32,12 @@ public final class GifView {
         return width;
     }
 
-    public void setWidth(final int width) {
-        this.width = width;
-    }
-
     public int getHeight() {
         return height;
     }
 
-    public void setHeight(final int height) {
-        this.height = height;
+    String getId() {
+        return id;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(final String title) {
-        this.title = title;
-    }
-
-    public String getLocalePath() {
-        return localePath;
-    }
-
-    void setLocalePath(final String localePath) {
-        this.localePath = localePath;
-    }
-
-    String getSharedPreferencesKey() {
-        return sharedPreferencesKey;
-    }
-
-    void setSharedPreferencesKey(final String sharedPreferencesKey) {
-        this.sharedPreferencesKey = sharedPreferencesKey;
-    }
 }

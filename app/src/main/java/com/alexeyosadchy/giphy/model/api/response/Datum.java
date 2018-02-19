@@ -9,15 +9,15 @@ public final class Datum {
     @SerializedName("images")
     @Expose
     private Images images;
-    @SerializedName("title")
+    @SerializedName("id")
     @Expose
-    private String title;
+    private String id;
 
     public Images getImages() {
         return images;
     }
 
-    public String getTitle() {
-        return title;
+    public String getId() {
+        return id;
     }
 }

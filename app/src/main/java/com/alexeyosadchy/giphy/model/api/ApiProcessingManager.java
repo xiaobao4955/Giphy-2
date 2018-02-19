@@ -1,7 +1,7 @@
 package com.alexeyosadchy.giphy.model.api;
 
-import com.alexeyosadchy.giphy.model.api.mapper.ResponseDataMapper;
-import com.alexeyosadchy.giphy.model.api.response.Images;
+import com.alexeyosadchy.giphy.model.api.response.Datum;
+import com.alexeyosadchy.giphy.model.api.response.Response;
 
 import java.util.List;
 
@@ -23,18 +23,18 @@ public final class ApiProcessingManager implements ApiManager {
     }
 
     @Override
-    public Observable<List<Images>> getTrendingGifs(final int limit, final int offset) {
+    public Observable<List<Datum>> getTrendingGifs(final int limit, final int offset) {
         return mApiService.getTrendingHighlights(API_KEY, limit, offset)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(ResponseDataMapper::transform);
+                .map(Response::getData);
     }
 
     @Override
-    public Observable<List<Images>> search(final String phrase, final int limit, final int offset) {
+    public Observable<List<Datum>> search(final String phrase, final int limit, final int offset) {
         return mApiService.search(API_KEY, phrase, limit, offset)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .map(ResponseDataMapper::transform);
+                .map(Response::getData);
     }
 }

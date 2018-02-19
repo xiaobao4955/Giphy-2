@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 
 import com.alexeyosadchy.giphy.di.ApplicationContext;
-import com.alexeyosadchy.giphy.utils.FileUtils;
 import com.facebook.common.executors.CallerThreadExecutor;
 import com.facebook.common.internal.Closeables;
 import com.facebook.common.memory.PooledByteBuffer;
@@ -47,9 +46,9 @@ public final class GifStorage {
     }
 
     public Completable deleteGif(final GifView gif) {
-        deleteGifFromSharedPreferences(gif.getSharedPreferencesKey());
+        deleteGifFromSharedPreferences(gif);
         return Completable
-                .fromCallable(() -> new File(gif.getLocalePath()).delete())
+                .fromCallable(() -> new File(convertIdToFilePath(gif.getId())).delete())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
@@ -64,38 +63,36 @@ public final class GifStorage {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    private String writeFile(final InputStream is) throws IOException {
+    private void writeFile(final InputStream is, final String id) throws IOException {
         final byte[] buffer = new byte[8 * 1024];
         int bytesRead;
-        final String path = FileUtils.getEmptyImageFilePath(context);
+        final String path = getEmptyImageFilePath(id);
         final OutputStream outStream = new FileOutputStream(path);
         while ((bytesRead = is.read(buffer)) != -1) {
             outStream.write(buffer, 0, bytesRead);
         }
-        return path;
     }
 
     private void putGifToSharedPreferences(final GifView gif) {
-        gif.setSharedPreferencesKey(gif.getUri());
         final String json = gson.toJson(gif);
-        editor.putString(gif.getUri(), json);
+        editor.putString(gif.getId(), json);
         editor.commit();
     }
 
-    private void deleteGifFromSharedPreferences(final String key) {
-        editor.remove(key);
+    private void deleteGifFromSharedPreferences(final GifView gif) {
+        editor.remove(gif.getId());
         editor.commit();
     }
 
     public boolean hasContainGif(final GifView gif) {
-        return gifFilePreferences.contains(gif.getSharedPreferencesKey());
+        return gifFilePreferences.contains(gif.getId());
     }
 
     public List<GifView> getAllSavedGifs() {
         final List<GifView> gifs = new ArrayList<>();
         for (final Map.Entry<String, ?> pair : gifFilePreferences.getAll().entrySet()) {
             final GifView gif = gson.fromJson((String) pair.getValue(), GifView.class);
-            gif.setSharedPreferencesKey(pair.getKey());
+            gif.setUri(Uri.fromFile(new File(convertIdToFilePath(gif.getId()))).toString());
             gifs.add(gif);
         }
         return gifs;
@@ -115,7 +112,7 @@ public final class GifStorage {
                 if (ref != null) {
                     final InputStream is = new PooledByteBufferInputStream(ref.get());
                     try {
-                        gif.setLocalePath(writeFile(is));
+                        writeFile(is, gif.getId());
                         putGifToSharedPreferences(gif);
                         e.onComplete();
                     } catch (Throwable throwable) {
@@ -132,5 +129,16 @@ public final class GifStorage {
                 e.onError(dataSource.getFailureCause());
             }
         };
+    }
+
+    private String convertIdToFilePath(final String id) {
+        return context.getFilesDir() + "/" + id + ".gif";
+    }
+
+    private String getEmptyImageFilePath(final String id) throws IOException {
+        final String imageFileName = id + ".gif";
+        final File storageDir = context.getFilesDir();
+        final File image = new File(storageDir, imageFileName);
+        return image.getAbsolutePath();
     }
 }

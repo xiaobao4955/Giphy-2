@@ -1,12 +1,9 @@
 package com.alexeyosadchy.giphy.presenter;
 
-import android.net.Uri;
-
 import com.alexeyosadchy.giphy.model.storage.GifStorage;
 import com.alexeyosadchy.giphy.model.storage.GifView;
 import com.alexeyosadchy.giphy.view.screens.favorite.FavoriteGifListActivity;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,10 +28,7 @@ public final class FavoriteGifsPresenter {
     }
 
     public void onCreateView() {
-        for (final GifView gif : mGifStorage.getAllSavedGifs()) {
-            gif.setUri(Uri.fromFile(new File(gif.getLocalePath())).toString());
-            mGifViews.add(gif);
-        }
+        mGifViews.addAll(mGifStorage.getAllSavedGifs());
         mView.prepareView(mGifViews, 0);
     }
 
