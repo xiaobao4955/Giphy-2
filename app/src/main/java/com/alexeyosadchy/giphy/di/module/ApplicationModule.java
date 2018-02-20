@@ -1,6 +1,7 @@
 package com.alexeyosadchy.giphy.di.module;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.alexeyosadchy.giphy.App;
 import com.alexeyosadchy.giphy.di.ApplicationContext;
@@ -13,11 +14,13 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public class ApplicationModule {
+public final class ApplicationModule {
 
-    private Context mContext;
+    private static final String GIF_FILE_PREFERENCES_KEY = "com.alexeyosadchy.giphy.GIFS";
 
-    public ApplicationModule(App context) {
+    private final Context mContext;
+
+    public ApplicationModule(final App context) {
         this.mContext = context;
     }
 
@@ -30,7 +33,13 @@ public class ApplicationModule {
 
     @Singleton
     @Provides
-    ApiManager provideApiManager(ApiProcessingManager apiProcessingManager) {
+    ApiManager provideApiManager(final ApiProcessingManager apiProcessingManager) {
         return apiProcessingManager;
+    }
+
+    @Provides
+    @Singleton
+    SharedPreferences provideSharedPreferences(@ApplicationContext final Context context) {
+        return context.getSharedPreferences(GIF_FILE_PREFERENCES_KEY, Context.MODE_PRIVATE);
     }
 }

@@ -1,14 +1,10 @@
 package com.alexeyosadchy.giphy.utils;
 
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-
 import com.alexeyosadchy.giphy.R;
 
 import java.util.Random;
 
-public class AdapterUtils {
+public final class AdapterUtils {
 
     public static int getRandomColor() {
         switch (new Random().nextInt(11)) {
@@ -37,17 +33,5 @@ public class AdapterUtils {
             default:
                 return R.color.place_holder_1;
         }
-    }
-
-    public static int getCurrentRecyclerViewPosition(RecyclerView recyclerView) {
-        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
-        if (layoutManager instanceof LinearLayoutManager) {
-            return ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
-        } else if (layoutManager instanceof StaggeredGridLayoutManager) {
-            int[] position = new int[((StaggeredGridLayoutManager) layoutManager).getSpanCount()];
-            return ((StaggeredGridLayoutManager) layoutManager)
-                    .findFirstVisibleItemPositions(position)[0];
-        }
-        return -1;
     }
 }

@@ -1,44 +1,23 @@
 
 package com.alexeyosadchy.giphy.model.api.response;
 
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Response {
+import java.util.ArrayList;
+import java.util.List;
+
+public final class Response {
 
     @SerializedName("data")
     @Expose
-    private List<Datum> data = null;
-    @SerializedName("pagination")
-    @Expose
-    private Pagination pagination;
-    @SerializedName("meta")
-    @Expose
-    private Meta meta;
+    private final List<Datum> data;
+
+    Response(final List<Datum> data) {
+        this.data = new ArrayList<>(data);
+    }
 
     public List<Datum> getData() {
-        return data;
+        return new ArrayList<>(data);
     }
-
-    public void setData(List<Datum> data) {
-        this.data = data;
-    }
-
-    public Pagination getPagination() {
-        return pagination;
-    }
-
-    public void setPagination(Pagination pagination) {
-        this.pagination = pagination;
-    }
-
-    public Meta getMeta() {
-        return meta;
-    }
-
-    public void setMeta(Meta meta) {
-        this.meta = meta;
-    }
-
 }

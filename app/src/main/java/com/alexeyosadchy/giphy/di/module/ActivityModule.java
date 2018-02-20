@@ -1,10 +1,13 @@
 package com.alexeyosadchy.giphy.di.module;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 
 import com.alexeyosadchy.giphy.di.ActivityContext;
+import com.alexeyosadchy.giphy.di.ApplicationContext;
+import com.alexeyosadchy.giphy.model.storage.GifStorage;
+import com.alexeyosadchy.giphy.presenter.FavoriteGifsPresenter;
 import com.alexeyosadchy.giphy.presenter.ITrendGifListPresenter;
 import com.alexeyosadchy.giphy.presenter.TrendGifListPresenter;
 
@@ -13,11 +16,11 @@ import dagger.Provides;
 import io.reactivex.disposables.CompositeDisposable;
 
 @Module
-public class ActivityModule {
+public final class ActivityModule {
 
-    private AppCompatActivity mActivity;
+    private final AppCompatActivity mActivity;
 
-    public ActivityModule(AppCompatActivity mActivity) {
+    public ActivityModule(final AppCompatActivity mActivity) {
         this.mActivity = mActivity;
     }
 
@@ -28,7 +31,7 @@ public class ActivityModule {
     }
 
     @Provides
-    CompositeDisposable provideCompositeDisposable(){
+    CompositeDisposable provideCompositeDisposable() {
         return new CompositeDisposable();
     }
 
@@ -38,7 +41,18 @@ public class ActivityModule {
     }
 
     @Provides
-    ITrendGifListPresenter provideITrendGifListPresenter(TrendGifListPresenter presenter) {
+    GifStorage proGifRetainHelper(@ApplicationContext final Context context, final SharedPreferences sharedPreferences) {
+        return new GifStorage(context, sharedPreferences);
+    }
+
+    @Provides
+    ITrendGifListPresenter provideITrendGifListPresenter(final TrendGifListPresenter presenter) {
         return presenter;
+    }
+
+    @Provides
+    FavoriteGifsPresenter provideFavoriteGifsPresenter(final CompositeDisposable compositeDisposable,
+                                                       final GifStorage gifStorage) {
+        return new FavoriteGifsPresenter(compositeDisposable, gifStorage);
     }
 }
