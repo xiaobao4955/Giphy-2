@@ -3,7 +3,7 @@
                                     xmlns:fresco="http://schemas.android.com/apk/res-auto"
                                     android:id="@+id/card_view_gif"
                                     android:layout_width="match_parent"
-                                    android:layout_height="200dp"
+                                    android:layout_height="wrap_content"
                                     fresco:cardBackgroundColor="@android:color/black"
                                     fresco:cardCornerRadius="0dp">
 
@@ -11,7 +11,7 @@
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/my_image_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         fresco:actualImageScaleType="centerCrop"
         fresco:layout_constraintBottom_toBottomOf="parent"

@@ -1,14 +1,11 @@
 package com.alexeyosadchy.giphy.view.screens.trends;
 
-import com.alexeyosadchy.giphy.model.storage.GifView;
 import com.alexeyosadchy.giphy.view.base.BaseListGifView;
-
-import java.util.List;
 
 
 public interface ITrendGifListActivity extends BaseListGifView {
 
-    void prepareView(List<GifView> gifs, int position);
+    void configurationAdapter();
 
     String getSearchQuery();
 

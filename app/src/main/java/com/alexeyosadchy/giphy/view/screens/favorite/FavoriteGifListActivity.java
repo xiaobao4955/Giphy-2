@@ -10,8 +10,6 @@ import com.alexeyosadchy.giphy.view.base.BaseFavoriteButton;
 import com.alexeyosadchy.giphy.view.base.BaseListGifActivity;
 import com.alexeyosadchy.giphy.view.base.GifListAdapter;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
@@ -35,25 +33,10 @@ public final class FavoriteGifListActivity extends BaseListGifActivity {
     }
 
     @Override
-    public void prepareView(final List<GifView> gifs, final int position) {
-        super.prepareView(gifs, position);
-        mGifListAdapter = new GifListAdapter(gifs, layoutManager, new BaseFavoriteButton() {
-            @Override
-            public void action(final int position) {
-                presenter.onClickFavoriteButton(position);
-            }
-
-            @Override
-            public int getImageResources(final int position) {
-                return R.drawable.ic_delete;
-            }
-        });
+    public void configurationAdapter() {
+        super.configurationAdapter();
+        mGifListAdapter = new GifListAdapter(deleteGifButton);
         mRecyclerView.setAdapter(mGifListAdapter);
-    }
-
-    @Override
-    public void updateList(final int position) {
-        mGifListAdapter.notifyItemRemoved(position);
     }
 
     @Override
@@ -61,4 +44,16 @@ public final class FavoriteGifListActivity extends BaseListGifActivity {
         presenter.onDetach();
         super.onDestroy();
     }
+
+    private final BaseFavoriteButton deleteGifButton = new BaseFavoriteButton() {
+        @Override
+        public void action(final GifView gif, final int position) {
+            presenter.onClickFavoriteButton(gif, position);
+        }
+
+        @Override
+        public int getImageResources(final GifView gif) {
+            return R.drawable.ic_delete;
+        }
+    };
 }

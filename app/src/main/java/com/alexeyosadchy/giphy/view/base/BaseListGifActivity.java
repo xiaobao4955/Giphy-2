@@ -1,6 +1,5 @@
 package com.alexeyosadchy.giphy.view.base;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -8,7 +7,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -31,7 +29,7 @@ public abstract class BaseListGifActivity extends AppCompatActivity implements B
 
     protected ActivityComponent mActivityComponent;
     protected GifListAdapter mGifListAdapter;
-    protected RecyclerView.LayoutManager layoutManager;
+    protected final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
 
     private Unbinder mUnBinder;
 
@@ -51,25 +49,36 @@ public abstract class BaseListGifActivity extends AppCompatActivity implements B
     }
 
     @Override
-    public void prepareView(final List<GifView> gifs, final int position) {
-        final int orientation = getResources().getConfiguration().orientation;
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            layoutManager = new LinearLayoutManager(this);
-        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            layoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        }
+    public void configurationAdapter() {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.clearOnScrollListeners();
-        mRecyclerView.scrollToPosition(position);
     }
 
     @Override
-    public void updateList() {
+    public void updateList(final List<GifView> gifs) {
+        mGifListAdapter.gifs.addAll(gifs);
         mGifListAdapter.notifyDataSetChanged();
     }
 
     @Override
-    public void updateList(final int position) {
+    public void removeItem(final int position) {
+        mGifListAdapter.gifs.remove(position);
+        mGifListAdapter.notifyItemRemoved(position);
+    }
+
+    @Override
+    public void clearList() {
+        mGifListAdapter.gifs.clear();
+        mGifListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public int getSizeList() {
+        return mGifListAdapter.gifs.size();
+    }
+
+    @Override
+    public void updateList(int position) {
         mGifListAdapter.notifyItemChanged(position);
     }
 

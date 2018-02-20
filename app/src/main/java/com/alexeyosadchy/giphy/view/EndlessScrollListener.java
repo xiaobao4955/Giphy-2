@@ -1,8 +1,7 @@
 package com.alexeyosadchy.giphy.view;
 
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-
-import com.alexeyosadchy.giphy.utils.AdapterUtils;
 
 public abstract class EndlessScrollListener extends RecyclerView.OnScrollListener {
 
@@ -18,7 +17,8 @@ public abstract class EndlessScrollListener extends RecyclerView.OnScrollListene
         if (dx != 0 || dy != 0) {
             final int visibleItemCount = recyclerView.getChildCount();
             final int totalItemCount = recyclerView.getAdapter().getItemCount();
-            final int firstVisibleItem = AdapterUtils.getCurrentRecyclerViewPosition(recyclerView);
+            final int firstVisibleItem = ((LinearLayoutManager) recyclerView.getLayoutManager())
+                    .findFirstVisibleItemPosition();
 
             if (loading) {
                 if (totalItemCount > previousTotal) {

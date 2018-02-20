@@ -5,7 +5,7 @@ import com.google.gson.annotations.Expose;
 public final class GifView {
 
     @Expose
-    private String uri;
+    private final String uri;
     @Expose
     private final String id;
     @Expose
@@ -22,10 +22,6 @@ public final class GifView {
 
     public String getUri() {
         return uri;
-    }
-
-    void setUri(final String uri) {
-        this.uri = uri;
     }
 
     public int getWidth() {

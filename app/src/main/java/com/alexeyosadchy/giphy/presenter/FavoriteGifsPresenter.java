@@ -4,9 +4,6 @@ import com.alexeyosadchy.giphy.model.storage.GifStorage;
 import com.alexeyosadchy.giphy.model.storage.GifView;
 import com.alexeyosadchy.giphy.view.screens.favorite.FavoriteGifListActivity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.inject.Inject;
 
 import io.reactivex.disposables.CompositeDisposable;
@@ -15,7 +12,6 @@ import io.reactivex.functions.Action;
 public final class FavoriteGifsPresenter {
 
     private FavoriteGifListActivity mView;
-    private final List<GifView> mGifViews;
     private final CompositeDisposable mDisposable;
     private final GifStorage mGifStorage;
 
@@ -24,19 +20,15 @@ public final class FavoriteGifsPresenter {
                                  final GifStorage gifStorage) {
         mDisposable = disposable;
         mGifStorage = gifStorage;
-        mGifViews = new ArrayList<>(mGifStorage.getAllSavedGifs());
     }
 
     public void onCreateView() {
-        mView.prepareView(mGifViews, 0);
+        mView.configurationAdapter();
+        mView.updateList(mGifStorage.getAllSavedGifs());
     }
 
-    public void onClickFavoriteButton(final int position) {
-        final GifView gif = mGifViews.get(position);
-        deleteGifFromStorage(() -> {
-            mGifViews.remove(position);
-            mView.updateList(position);
-        }, gif);
+    public void onClickFavoriteButton(final GifView gif, int position) {
+        deleteGifFromStorage(() -> mView.removeItem(position), gif);
     }
 
     private void deleteGifFromStorage(final Action onComplete, final GifView gif) {

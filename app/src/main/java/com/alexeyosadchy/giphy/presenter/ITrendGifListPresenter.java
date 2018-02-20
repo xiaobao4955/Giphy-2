@@ -1,5 +1,6 @@
 package com.alexeyosadchy.giphy.presenter;
 
+import com.alexeyosadchy.giphy.model.storage.GifView;
 import com.alexeyosadchy.giphy.view.screens.trends.ITrendGifListActivity;
 
 public interface ITrendGifListPresenter {
@@ -14,13 +15,11 @@ public interface ITrendGifListPresenter {
 
     void onCreateView();
 
-    void onConfigurationChanged(int firstVisiblePosition);
-
     void loadGifs();
 
-    void onClickFavoriteButton(int position);
+    void onClickFavoriteButton(GifView gif, int position);
 
-    boolean onBindView(int position);
+    boolean onBindView(GifView gif);
 
     void onSearchSubmit(String query);
 }

@@ -8,7 +8,6 @@ import com.alexeyosadchy.giphy.view.screens.trends.TrendGifListActivity;
 
 import java.net.ConnectException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,7 +24,6 @@ public final class TrendGifListPresenter implements ITrendGifListPresenter {
 
     private ITrendGifListActivity mView;
     private final ApiManager mApiManager;
-    private final List<GifView> mGifViews;
     private final CompositeDisposable mDisposable;
     private final GifStorage mGifStorage;
 
@@ -36,18 +34,12 @@ public final class TrendGifListPresenter implements ITrendGifListPresenter {
         mApiManager = apiManager;
         mDisposable = disposable;
         mGifStorage = gifStorage;
-        mGifViews = new ArrayList<>();
-    }
-
-    @Override
-    public void onConfigurationChanged(final int firstVisiblePosition) {
-        mView.prepareView(mGifViews, firstVisiblePosition);
     }
 
     @Override
     public void onCreateView() {
-        mGifViews.clear();
-        mView.prepareView(mGifViews, 0);
+        mView.configurationAdapter();
+        mView.clearList();
         loadGifs();
     }
 
@@ -55,15 +47,14 @@ public final class TrendGifListPresenter implements ITrendGifListPresenter {
     public void loadGifs() {
         mView.showLoading();
         if (mView.isSearchModeActive()) {
-            subscribeRequestToApi(mApiManager.search(mView.getSearchQuery(), LIMIT_RECORDS, mGifViews.size()));
+            subscribeRequestToApi(mApiManager.search(mView.getSearchQuery(), LIMIT_RECORDS, mView.getSizeList()));
         } else {
-            subscribeRequestToApi(mApiManager.getTrendingGifs(LIMIT_RECORDS, mGifViews.size()));
+            subscribeRequestToApi(mApiManager.getTrendingGifs(LIMIT_RECORDS, mView.getSizeList()));
         }
     }
 
     @Override
-    public void onClickFavoriteButton(final int position) {
-        final GifView gif = mGifViews.get(position);
+    public void onClickFavoriteButton(final GifView gif, final int position) {
         if (mGifStorage.hasContainGif(gif)) {
             subscribeRequestToGifStorage(mGifStorage.deleteGif(gif), position);
         } else {
@@ -72,8 +63,8 @@ public final class TrendGifListPresenter implements ITrendGifListPresenter {
     }
 
     @Override
-    public boolean onBindView(final int position) {
-        return mGifStorage.hasContainGif(mGifViews.get(position));
+    public boolean onBindView(final GifView gif) {
+        return mGifStorage.hasContainGif(gif);
     }
 
     @Override
@@ -97,8 +88,7 @@ public final class TrendGifListPresenter implements ITrendGifListPresenter {
 
     private void subscribeRequestToApi(final Single<List<GifView>> single) {
         final Consumer<List<GifView>> onNext = gifViews -> {
-            mGifViews.addAll(gifViews);
-            mView.updateList();
+            mView.updateList(gifViews);
             mView.hideLoading();
         };
         final Consumer<Throwable> onError = throwable -> errorHandling(throwable, this::loadGifs);
