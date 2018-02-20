@@ -14,8 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".view.TrendGifListActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize">
+            android:name=".view.screens.trends.TrendGifListActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -23,6 +23,10 @@
             </intent-filter>
 
         </activity>
+
+        <activity
+            android:name=".view.screens.favorite.FavoriteGifListActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

@@ -8,4 +8,10 @@
         android:icon="@drawable/ic_toolbar_search"
         yourapp:showAsAction="always|collapseActionView"
         yourapp:actionViewClass="android.support.v7.widget.SearchView" />
+
+    <item
+        android:id="@+id/action_favorite"
+        android:title="@string/option_menu_favorite"
+        android:icon="@drawable/ic_star"
+        yourapp:showAsAction="always"/>
 </menu>

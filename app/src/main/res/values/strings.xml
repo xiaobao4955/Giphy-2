@@ -6,4 +6,5 @@
     <string name="search_mode_on">Search</string>
     <string name="search_mode_off">Trending</string>
     <string name="text_btn_snackbar">Retry</string>
+    <string name="option_menu_favorite">Favorite</string>
 </resources>
