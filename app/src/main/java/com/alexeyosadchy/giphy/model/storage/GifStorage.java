@@ -48,7 +48,7 @@ public final class GifStorage {
     public Completable deleteGif(final GifView gif) {
         deleteGifFromSharedPreferences(gif);
         return applySchedulers(Completable
-                .fromCallable(() -> new File(convertIdToFilePath(getGifId(gif))).delete()));
+                .fromCallable(() -> new File(convertIdToFilePath(gif.getId())).delete()));
     }
 
     public Completable saveGif(final GifView gif) {
@@ -71,25 +71,25 @@ public final class GifStorage {
 
     private void putGifToSharedPreferences(final GifView gif) {
         final String json = gson.toJson(gif);
-        editor.putString(getGifId(gif), json);
+        editor.putString(gif.getId(), json);
         editor.commit();
     }
 
     private void deleteGifFromSharedPreferences(final GifView gif) {
-        editor.remove(getGifId(gif));
+        editor.remove(gif.getId());
         editor.commit();
     }
 
     public boolean hasContainGif(final GifView gif) {
-        return gifFilePreferences.contains(getGifId(gif));
+        return gifFilePreferences.contains(gif.getId());
     }
 
     public List<GifView> getAllSavedGifs() {
         final List<GifView> gifs = new ArrayList<>();
         for (final Map.Entry<String, ?> pair : gifFilePreferences.getAll().entrySet()) {
             final GifView gif = gson.fromJson((String) pair.getValue(), GifView.class);
-            final String localUri = (Uri.fromFile(new File(convertIdToFilePath(getGifId(gif)))).toString());
-            gifs.add(new GifView(localUri, getGifId(gif), gif.getWidth(), gif.getHeight()));
+            final String localUri = (Uri.fromFile(new File(convertIdToFilePath(gif.getId()))).toString());
+            gifs.add(new GifView(localUri, gif.getId(), gif.getWidth(), gif.getHeight()));
         }
         return gifs;
     }
@@ -108,7 +108,7 @@ public final class GifStorage {
                 if (ref != null) {
                     final InputStream is = new PooledByteBufferInputStream(ref.get());
                     try {
-                        writeFile(is, getGifId(gif));
+                        writeFile(is, gif.getId());
                         putGifToSharedPreferences(gif);
                         e.onComplete();
                     } catch (Throwable throwable) {
@@ -134,10 +134,6 @@ public final class GifStorage {
     private String getEmptyImageFilePath(final String id) throws IOException {
         final File image = new File(context.getFilesDir(), id + ".gif");
         return image.getAbsolutePath();
-    }
-
-    private String getGifId(final GifView gif) {
-        return gif.getId();
     }
 
     private Completable applySchedulers(final Completable completable) {
