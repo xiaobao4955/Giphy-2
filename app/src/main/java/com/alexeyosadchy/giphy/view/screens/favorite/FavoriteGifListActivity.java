@@ -22,9 +22,6 @@ public final class FavoriteGifListActivity extends BaseListGifActivity {
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_trend_gif_list);
-
-        setUnBinder(ButterKnife.bind(this));
         mActivityComponent.inject(this);
         presenter.onAttach(this);
         presenter.onCreateView();
@@ -33,8 +30,8 @@ public final class FavoriteGifListActivity extends BaseListGifActivity {
     }
 
     @Override
-    public void configurationAdapter() {
-        super.configurationAdapter();
+    public void configurateAdapter() {
+        super.configurateAdapter();
         mGifListAdapter = new GifListAdapter(deleteGifButton);
         mRecyclerView.setAdapter(mGifListAdapter);
     }

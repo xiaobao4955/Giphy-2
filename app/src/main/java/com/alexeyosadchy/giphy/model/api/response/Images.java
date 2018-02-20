@@ -8,7 +8,11 @@ public final class Images {
 
     @SerializedName("fixed_height")
     @Expose
-    private FixedHeight fixedHeight;
+    private final FixedHeight fixedHeight;
+
+    Images(final FixedHeight fixedHeight) {
+        this.fixedHeight = fixedHeight;
+    }
 
     public FixedHeight getFixedHeight() {
         return fixedHeight;

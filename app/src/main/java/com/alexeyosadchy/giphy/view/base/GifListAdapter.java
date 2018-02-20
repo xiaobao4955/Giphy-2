@@ -19,12 +19,30 @@ import java.util.List;
 
 public final class GifListAdapter extends RecyclerView.Adapter<GifListAdapter.GifHolder> {
 
-    final List<GifView> gifs;
+    private final List<GifView> gifs = new ArrayList<>();
     private final BaseFavoriteButton mButton;
 
     public GifListAdapter(final BaseFavoriteButton button) {
-        this.gifs = new ArrayList<>();
         mButton = button;
+    }
+
+    void updateList(final List<GifView> gifs) {
+        this.gifs.addAll(gifs);
+        notifyDataSetChanged();
+    }
+
+    void removeItem(final int position) {
+        gifs.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    void clearList() {
+        gifs.clear();
+        notifyDataSetChanged();
+    }
+
+    int getSizeList() {
+        return gifs.size();
     }
 
     @Override

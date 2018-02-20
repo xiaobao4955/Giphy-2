@@ -23,6 +23,7 @@ import com.alexeyosadchy.giphy.view.screens.trends.ITrendGifListActivity;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 public abstract class BaseListGifActivity extends AppCompatActivity implements BaseListGifView {
@@ -42,6 +43,8 @@ public abstract class BaseListGifActivity extends AppCompatActivity implements B
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_trend_gif_list);
+        mUnBinder = ButterKnife.bind(this);
         mActivityComponent = DaggerActivityComponent.builder()
                 .applicationComponent(((App) getApplication()).getApplicationComponent())
                 .activityModule(new ActivityModule(this))
@@ -49,32 +52,29 @@ public abstract class BaseListGifActivity extends AppCompatActivity implements B
     }
 
     @Override
-    public void configurationAdapter() {
+    public void configurateAdapter() {
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.clearOnScrollListeners();
     }
 
     @Override
-    public void updateList(final List<GifView> gifs) {
-        mGifListAdapter.gifs.addAll(gifs);
-        mGifListAdapter.notifyDataSetChanged();
+    public void addItemsToList(final List<GifView> gifs) {
+        mGifListAdapter.updateList(gifs);
     }
 
     @Override
     public void removeItem(final int position) {
-        mGifListAdapter.gifs.remove(position);
-        mGifListAdapter.notifyItemRemoved(position);
+        mGifListAdapter.removeItem(position);
     }
 
     @Override
     public void clearList() {
-        mGifListAdapter.gifs.clear();
-        mGifListAdapter.notifyDataSetChanged();
+        mGifListAdapter.clearList();
     }
 
     @Override
     public int getSizeList() {
-        return mGifListAdapter.gifs.size();
+        return mGifListAdapter.getSizeList();
     }
 
     @Override
@@ -124,9 +124,5 @@ public abstract class BaseListGifActivity extends AppCompatActivity implements B
         final TextView textView = sbView.findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(ContextCompat.getColor(this, R.color.text_color_inverse));
         snackbar.show();
-    }
-
-    protected void setUnBinder(final Unbinder unBinder) {
-        mUnBinder = unBinder;
     }
 }

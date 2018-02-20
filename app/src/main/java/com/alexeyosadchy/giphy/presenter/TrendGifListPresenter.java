@@ -38,7 +38,7 @@ public final class TrendGifListPresenter implements ITrendGifListPresenter {
 
     @Override
     public void onCreateView() {
-        mView.configurationAdapter();
+        mView.configurateAdapter();
         mView.clearList();
         loadGifs();
     }
@@ -88,7 +88,7 @@ public final class TrendGifListPresenter implements ITrendGifListPresenter {
 
     private void subscribeRequestToApi(final Single<List<GifView>> single) {
         final Consumer<List<GifView>> onNext = gifViews -> {
-            mView.updateList(gifViews);
+            mView.addItemsToList(gifViews);
             mView.hideLoading();
         };
         final Consumer<Throwable> onError = throwable -> errorHandling(throwable, this::loadGifs);

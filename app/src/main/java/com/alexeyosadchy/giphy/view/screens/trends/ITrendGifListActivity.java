@@ -5,7 +5,7 @@ import com.alexeyosadchy.giphy.view.base.BaseListGifView;
 
 public interface ITrendGifListActivity extends BaseListGifView {
 
-    void configurationAdapter();
+    void configurateAdapter();
 
     String getSearchQuery();
 

@@ -11,9 +11,9 @@ public interface BaseListGifView {
 
     void hideLoading();
 
-    void configurationAdapter();
+    void configurateAdapter();
 
-    void updateList(List<GifView> gifs);
+    void addItemsToList(List<GifView> gifs);
 
     void removeItem(int position);
 

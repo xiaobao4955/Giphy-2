@@ -30,9 +30,6 @@ public final class TrendGifListActivity extends BaseListGifActivity implements I
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_trend_gif_list);
-        setUnBinder(ButterKnife.bind(this));
-
         mActivityComponent.inject(this);
         presenter.onAttach(this);
         presenter.onCreateView();
@@ -97,8 +94,8 @@ public final class TrendGifListActivity extends BaseListGifActivity implements I
     }
 
     @Override
-    public void configurationAdapter() {
-        super.configurationAdapter();
+    public void configurateAdapter() {
+        super.configurateAdapter();
         mGifListAdapter = new GifListAdapter(likeButtonHandler);
         mRecyclerView.setAdapter(mGifListAdapter);
         mRecyclerView.addOnScrollListener(new EndlessScrollListener() {

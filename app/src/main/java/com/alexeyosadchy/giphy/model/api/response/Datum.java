@@ -8,10 +8,15 @@ public final class Datum {
 
     @SerializedName("images")
     @Expose
-    private Images images;
+    private final Images images;
     @SerializedName("id")
     @Expose
-    private String id;
+    private final String id;
+
+    Datum(final Images images, final String id) {
+        this.images = images;
+        this.id = id;
+    }
 
     public Images getImages() {
         return images;

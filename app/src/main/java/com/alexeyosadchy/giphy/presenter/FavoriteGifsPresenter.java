@@ -23,8 +23,8 @@ public final class FavoriteGifsPresenter {
     }
 
     public void onCreateView() {
-        mView.configurationAdapter();
-        mView.updateList(mGifStorage.getAllSavedGifs());
+        mView.configurateAdapter();
+        mView.addItemsToList(mGifStorage.getAllSavedGifs());
     }
 
     public void onClickFavoriteButton(final GifView gif, int position) {
